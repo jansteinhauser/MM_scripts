@@ -170,7 +170,7 @@ correct_emissions <- FALSE
 
 map_file <- "map_magpie_message.csv"
 map_file <- paste0(
-  "/p/projects/magpie/users/janstein/utilities/", map_file
+  "/p/projects/magpie/users/janstein/MM_scripts/", map_file
   )
 # generate with:
 # generateMappingfile("MESSAGE_MAgPIE", fileName = map, output = ".") #nolint
