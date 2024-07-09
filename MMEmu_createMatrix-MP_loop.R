@@ -430,11 +430,11 @@ while (loop_wait <= 30) {
                 getNames(dairy_base) <- "Demand|Food|Livestock products|Dairy|Baseline (Mt DM/yr)"
 
                 # Get protein content of beef, dairy, MP
-                prot_beef <- readGDX(gdx, "p56_pollutant_prices_input",
+                prot_beef <- readGDX(gdx, "f15_nutrition_attributes",
                   react = "silent")[, years, "livst_rum.protein"]
-                prot_dairy <- readGDX(gdx, "p56_pollutant_prices_input",
+                prot_dairy <- readGDX(gdx, "f15_nutrition_attributes",
                   react = "silent")[, years, "livst_dairy.protein"]
-                prot_MP <- readGDX(gdx, "p56_pollutant_prices_input",
+                prot_MP <- readGDX(gdx, "f15_nutrition_attributes",
                   react = "silent")[, years, "scp.protein"]
 
                 # Multiply by delta and MP tonnage respectively
