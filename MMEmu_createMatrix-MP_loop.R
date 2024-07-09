@@ -130,7 +130,7 @@ getReportMESSAGE <- function(
   #                    "reportPlantationEstablishment(gdx)",
   #                    "reportRotationLength(gdx)",
                       "reportTimber(gdx)",
-                      "reportPBbiosphere(gdx, dir=bii_path)",
+  #                    "reportPBbiosphere(gdx, dir=bii_path)",
                       gdx = gdx)
   }  else {
     output <- tryList(
@@ -422,12 +422,15 @@ while (loop_wait <= 30) {
                 beef <- a[,,d]
                 beef_delta <- beef_base - beef
                 getNames(beef_base) <- "Demand|Food|Livestock products|Ruminant meat|Baseline (Mt DM/yr)"
+                getNames(beef_delta) <- "Demand|Food|Livestock products|Ruminant meat|Replaced (Mt DM/yr)"
+
 
                 d <- "Demand|Food|Livestock products|+|Dairy (Mt DM/yr)"
                 dairy_base <- f[,,d]
                 dairy <- a[,,d]
                 dairy_delta <- dairy_base - dairy
                 getNames(dairy_base) <- "Demand|Food|Livestock products|Dairy|Baseline (Mt DM/yr)"
+                getNames(dairy_delta) <- "Demand|Food|Livestock products|Dairy|Replaced (Mt DM/yr)"
 
                 # Get protein content of beef, dairy, MP
                 prot_beef <- readGDX(gdx, "f15_nutrition_attributes",

@@ -161,6 +161,12 @@ Costs|TC (million US$05/yr);Costs|TC (million US$2005);1;NULL;reg+glo
 Biodiversity|BII (unitless);Biodiversity|BII (unitless);1;NULL;reg+glo
 Biodiversity|Biodiversity Hotspot BII (unitless);Biodiversity|BII|Biodiversity hotspots (unitless);1;NULL;reg+glo
 Demand|Food|Secondary products|+|Microbial protein (Mt DM/yr);Food Demand|Microbial protein (million t DM/yr);1;NULL;reg+glo
+Demand|Food|Secondary products|Microbial protein|+|Dairy (Mt DM/yr);Food Demand|Microbial protein|Dairy (million t DM/yr);1;NULL;reg+glo
+Demand|Food|Secondary products|Microbial protein|+|Ruminant meat (Mt DM/yr);Food Demand|Microbial protein|Ruminant meat (million t DM/yr);1;NULL;reg+glo
+Demand|Food|Livestock products|+|Ruminant meat (Mt DM/yr);Food Demand|Ruminant meat (million t DM/yr);1;NULL;reg+glo
+Demand|Food|Livestock products|Ruminant meat|Replaced (Mt DM/yr);Food Demand|Ruminant meat|Replaced by microbial protein (million t DM/yr);1;NULL;reg+glo
+Demand|Food|Livestock products|+|Dairy (Mt DM/yr);Food Demand|Dairy (million t DM/yr);1;NULL;reg+glo
+Demand|Food|Livestock products|Dairy|Replaced (Mt DM/yr);Food Demand|Dairy|Replaced by microbial protein (million t DM/yr);1;NULL;reg+glo
 Cost|Total (million US$05);Cost|Total (million US$05);1;NULL;glo
 Cost|Reward CDR Afforestation (million US$05);Cost|Reward CDR Afforestation (million US$05);1;NULL;glo
 Cost|Cost Emissions (million US$05);Cost|Cost Emissions (million US$05);1;NULL;glo
