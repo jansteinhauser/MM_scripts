@@ -433,7 +433,7 @@ while (loop_wait <= 30) {
                 prot_beef <- readGDX(gdx, "f15_nutrition_attributes",
                   react = "silent")[, years, "livst_rum.protein"]
                 prot_dairy <- readGDX(gdx, "f15_nutrition_attributes",
-                  react = "silent")[, years, "livst_dairy.protein"]
+                  react = "silent")[, years, "livst_milk.protein"]
                 prot_MP <- readGDX(gdx, "f15_nutrition_attributes",
                   react = "silent")[, years, "scp.protein"]
 
