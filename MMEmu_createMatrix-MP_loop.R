@@ -452,7 +452,7 @@ while (loop_wait <= 30) {
                 getNames(beef_mp) <- "Demand|Food|Secondary products|Microbial protein|+|Ruminant meat (Mt DM/yr)"
                 getNames(dairy_mp) <- "Demand|Food|Secondary products|Microbial protein|+|Dairy (Mt DM/yr)"
 
-                a <- mbind(a, beef_base, dairy_base, beef_mp, dairy_mp)
+                a <- mbind(a, beef_base, dairy_base, beef_delta, dairy_delta, beef_mp, dairy_mp)
 
                 ### Add Filler Zero object for mapping
                 z <- new.magpie(
