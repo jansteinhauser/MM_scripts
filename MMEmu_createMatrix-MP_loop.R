@@ -25,7 +25,7 @@ sum_glo <- function(b) {
 }
 
 getReportMESSAGE <- function(
-  gdx, file = NULL, detail = TRUE, baseyear = "y2005", bii_path = ".", food_only = FALSE...) {
+  gdx, file = NULL, detail = TRUE, baseyear = "y2005", bii_path = ".", food_only = FALSE, ...) {
 
   tryReport <- function(report, width, gdx) {
     regs  <- c(readGDX(gdx, "i"), "GLO")
