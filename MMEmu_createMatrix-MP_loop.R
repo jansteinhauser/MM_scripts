@@ -25,7 +25,7 @@ sum_glo <- function(b) {
 }
 
 getReportMESSAGE <- function(
-  gdx, file = NULL, detail = TRUE, baseyear = "y2005", bii_path = ".", ...) {
+  gdx, file = NULL, detail = TRUE, baseyear = "y2005", bii_path = ".", food_only = FALSE...) {
 
   tryReport <- function(report, width, gdx) {
     regs  <- c(readGDX(gdx, "i"), "GLO")
@@ -65,71 +65,78 @@ getReportMESSAGE <- function(
 
   message("Start getReportMESSAGE(gdx)...")
 
-  output <- tryList(
-                    "reportPopulation(gdx)",
-#                    "reportIncome(gdx)",
-#                    "reportProducerPriceIndex(gdx)",
-#                    "reportPriceGHG(gdx)",
-#                    "reportFoodExpenditure(gdx)",
-                    "reportKcal(gdx,detail=detail)",
-#                    "reportIntakeDetailed(gdx,detail=detail)",
-#                    "reportLivestockShare(gdx)",
-#                    "reportLivestockDemStructure(gdx)",
-#                    "reportVegfruitShare(gdx)",
-#                    "reportHunger(gdx)",
-#                    "reportPriceShock(gdx)",
-#                    "reportPriceElasticities(gdx)",
-                    "reportBII(gdx, dir=bii_path)",
-                    "reportProduction(gdx,detail=detail,agmip=TRUE)",
-                    "reportDemand(gdx,detail=detail,agmip=TRUE)",
-                    "reportDemandBioenergy(gdx,detail=detail)",
-#                    "reportFeed(gdx,detail=detail)",
-#                    "reportTrade(gdx,detail=detail)",
-                    "reportLandUse(gdx)",
-#                    "reportLandUseChange(gdx)",
-                    "reportProtectedArea(gdx)",
-                    "reportCroparea(gdx,detail=detail)",
-                    "reportNitrogenBudgetCropland(gdx)",
-#                    "reportNitrogenBudgetPasture(gdx)",
-#                    "reportManure(gdx)",
-                    "reportYields(gdx,detail=detail)",
-                    "reportTau(gdx)",
-#                    "reportTc(gdx)",
-                     "reportCostTC(gdx)",
-#                    "reportYieldShifter(gdx)",
-                    "reportEmissions(gdx)",
-#                    "reportEmisAerosols(gdx)",
-#                    "reportEmissionsBeforeTechnicalMitigation(gdx)",
-#                    "reportEmisPhosphorus(gdx)",
-#                    "reportCosts(gdx)",
-#                    "reportCostsPresolve(gdx)",
-                    "reportPriceFoodIndex(gdx, baseyear = baseyear)",
-#                    "reportPriceAgriculture(gdx)",
-#                    "reportPriceBioenergy(gdx)",
-#                    "reportPriceLand(gdx)",
-                    "reportPriceWater(gdx)",
-#                    "reportValueTrade(gdx)",
-#                    "reportValueConsumption(gdx)",
-#                    "reportProcessing(gdx, indicator='primary_to_process')",
-#                    "reportProcessing(gdx, indicator='secondary_from_primary')",
-#                    "reportAEI(gdx)",
-                    "reportWaterUsage(gdx)",
-#                    "reportAAI(gdx)",
-#                    "reportSOM(gdx)",
-#                    "reportGrowingStock(gdx)",
-#                    "reportSDG1(gdx)",
-                    "reportSDG2(gdx)",
-#                    "reportSDG3(gdx)",
-#                    "reportSDG6(gdx)",
-#                    "reportSDG12(gdx)",
-#                    "reportSDG15(gdx)",
-#                    "reportForestYield(gdx)",
-                    "reportharvested_area_timber(gdx)",
-#                    "reportPlantationEstablishment(gdx)",
-#                    "reportRotationLength(gdx)",
-                    "reportTimber(gdx)",
-                    "reportPBbiosphere(gdx, dir=bii_path)",
-                    gdx = gdx)
+  if (!food_only) {
+
+    output <- tryList(
+                      "reportPopulation(gdx)",
+  #                    "reportIncome(gdx)",
+  #                    "reportProducerPriceIndex(gdx)",
+  #                    "reportPriceGHG(gdx)",
+  #                    "reportFoodExpenditure(gdx)",
+                      "reportKcal(gdx,detail=detail)",
+  #                    "reportIntakeDetailed(gdx,detail=detail)",
+  #                    "reportLivestockShare(gdx)",
+  #                    "reportLivestockDemStructure(gdx)",
+  #                    "reportVegfruitShare(gdx)",
+  #                    "reportHunger(gdx)",
+  #                    "reportPriceShock(gdx)",
+  #                    "reportPriceElasticities(gdx)",
+                      "reportBII(gdx, dir=bii_path)",
+                      "reportProduction(gdx,detail=detail,agmip=TRUE)",
+                      "reportDemand(gdx,detail=detail,agmip=TRUE)",
+                      "reportDemandBioenergy(gdx,detail=detail)",
+  #                    "reportFeed(gdx,detail=detail)",
+  #                    "reportTrade(gdx,detail=detail)",
+                      "reportLandUse(gdx)",
+  #                    "reportLandUseChange(gdx)",
+                      "reportProtectedArea(gdx)",
+                      "reportCroparea(gdx,detail=detail)",
+                      "reportNitrogenBudgetCropland(gdx)",
+  #                    "reportNitrogenBudgetPasture(gdx)",
+  #                    "reportManure(gdx)",
+                      "reportYields(gdx,detail=detail)",
+                      "reportTau(gdx)",
+  #                    "reportTc(gdx)",
+                      "reportCostTC(gdx)",
+  #                    "reportYieldShifter(gdx)",
+                      "reportEmissions(gdx)",
+  #                    "reportEmisAerosols(gdx)",
+  #                    "reportEmissionsBeforeTechnicalMitigation(gdx)",
+  #                    "reportEmisPhosphorus(gdx)",
+  #                    "reportCosts(gdx)",
+  #                    "reportCostsPresolve(gdx)",
+                      "reportPriceFoodIndex(gdx, baseyear = baseyear)",
+  #                    "reportPriceAgriculture(gdx)",
+  #                    "reportPriceBioenergy(gdx)",
+  #                    "reportPriceLand(gdx)",
+                      "reportPriceWater(gdx)",
+  #                    "reportValueTrade(gdx)",
+  #                    "reportValueConsumption(gdx)",
+  #                    "reportProcessing(gdx, indicator='primary_to_process')",
+  #                    "reportProcessing(gdx, indicator='secondary_from_primary')",
+  #                    "reportAEI(gdx)",
+                      "reportWaterUsage(gdx)",
+  #                    "reportAAI(gdx)",
+  #                    "reportSOM(gdx)",
+  #                    "reportGrowingStock(gdx)",
+  #                    "reportSDG1(gdx)",
+                      "reportSDG2(gdx)",
+  #                    "reportSDG3(gdx)",
+  #                    "reportSDG6(gdx)",
+  #                    "reportSDG12(gdx)",
+  #                    "reportSDG15(gdx)",
+  #                    "reportForestYield(gdx)",
+                      "reportharvested_area_timber(gdx)",
+  #                    "reportPlantationEstablishment(gdx)",
+  #                    "reportRotationLength(gdx)",
+                      "reportTimber(gdx)",
+                      "reportPBbiosphere(gdx, dir=bii_path)",
+                      gdx = gdx)
+  }  else {
+    output <- tryList(
+                      "reportDemand(gdx,detail=detail,agmip=TRUE)",
+                      gdx = gdx)
+  }
 
 
   if (!is.null(file)) write.report2(output, file = file, ...)
@@ -151,9 +158,7 @@ loop_wait <- 0
 check_file <-  "cell.bii_0.5.nc"
 
 magpie_folder_v <- c("2311-magpie")
-matrix_folder_v <- c(
-   "SCP_23-11-27"
-)
+matrix_folder_v <- c("SCP_23-11-27")
 price_folder_v <- matrix_folder_v
 
 e_vec <- c(0, 5, 7, 10, 15, 25, 45) # 0, 5, 7, 10, 15, 25, 45
@@ -205,6 +210,10 @@ while (loop_wait <= 30) {
           "BI", str_pad(bl, 2, pad = "0")
           )
         price_preflag <- input_preflag
+        food_preflag <- paste0(
+          "MP00",
+          "BI", str_pad(bl, 2, pad = "0")
+          )
         output_flag <- paste0(
           "MP", str_pad(mp, 2, pad = "0"),
           "BI", str_pad(bl, 2, pad = "0"),
@@ -398,6 +407,49 @@ while (loop_wait <= 30) {
                 a <- a[, , getNames(prices), invert = TRUE]
                 a <- mbind(a, prices)
 
+
+                ### MP split
+                # Load a reduced reporting (food demand only) from a baseline run (MP00BIXXEYYGZZZZ)               
+                food_gdx_path <- paste0(food_preflag, e_f, g_f, input_postflag)
+                food_gdx <- paste(
+                  matrix_folder, food_preflag, food_gdx_path, "fulldata.gdx", sep = "/"
+                  )                
+                f <- mbind(getReportMESSAGE(food_gdx, food_only = TRUE))
+
+                # Get Delta between baseline and MP for beef and dairy
+                d <- "Demand|Food|Livestock products|+|Ruminant meat (Mt DM/yr)"
+                beef_base <- f[,,d]
+                beef <- a[,,d]
+                beef_delta <- beef_base - beef
+                getNames(beef_base) <- "Demand|Food|Livestock products|Ruminant meat|Baseline (Mt DM/yr)"
+
+                d <- "Demand|Food|Livestock products|+|Dairy (Mt DM/yr)"
+                dairy_base <- f[,,d]
+                dairy <- a[,,d]
+                dairy_delta <- dairy_base - dairy
+                getNames(dairy_base) <- "Demand|Food|Livestock products|Dairy|Baseline (Mt DM/yr)"
+
+                # Get protein content of beef, dairy, MP
+                prot_beef <- readGDX(gdx, "p56_pollutant_prices_input",
+                  react = "silent")[, years, "livst_rum.protein"]
+                prot_dairy <- readGDX(gdx, "p56_pollutant_prices_input",
+                  react = "silent")[, years, "livst_dairy.protein"]
+                prot_MP <- readGDX(gdx, "p56_pollutant_prices_input",
+                  react = "silent")[, years, "scp.protein"]
+
+                # Multiply by delta and MP tonnage respectively
+                # Get share of delta protein of total MP Protein
+                # Share (beef, dairy protein) * MP tonnage = tonnage MP (beef, dairy)
+                beef_mp  <- beef_delta  * prot_beef  / prot_MP 
+                dairy_mp <- dairy_delta * prot_dairy / prot_MP
+
+                # Rename magpie objects:
+                ## Demand|Food|Secondary products|Microbial protein|+|Ruminant meat (Mt DM/yr)
+                ## Demand|Food|Secondary products|Microbial protein|+|Dairy (Mt DM/yr)
+                getNames(beef_mp) <- "Demand|Food|Secondary products|Microbial protein|+|Ruminant meat (Mt DM/yr)"
+                getNames(dairy_mp) <- "Demand|Food|Secondary products|Microbial protein|+|Dairy (Mt DM/yr)"
+
+                a <- mbind(a, beef_base, dairy_base, beef_mp, dairy_mp)
 
                 ### Add Filler Zero object for mapping
                 z <- new.magpie(
