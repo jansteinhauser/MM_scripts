@@ -72,12 +72,16 @@ Emissions|N2O|Land|+|Biomass Burning (Mt N2O/yr);Emissions|N2O|AFOLU|Biomass Bur
 ZERO (NA);Emissions|N2O|AFOLU|Land (kt N2O/yr);1;NULL;reg+glo
 ZERO (NA);Emissions|N2O|AFOLU|Land|Grassland Burning (kt N2O/yr);1;NULL;reg+glo
 ZERO (NA);Emissions|N2O|AFOLU|Land|Grassland Pastures (kt N2O/yr);1;NULL;reg+glo
-Resources|Nitrogen|Cropland Budget|Inputs|+|Fertilizer (Mt Nr/yr);Fertilizer Use|Nitrogen (Tg N/yr);1;NULL;reg+glo
-Resources|Nitrogen|Cropland Budget|Inputs|+|Manure (Mt Nr/yr);Fertilizer Use|Nitrogen (Tg N/yr);1;NULL;reg+glo
-Resources|Nitrogen|Cropland Budget|Inputs|+|Manure From Stubble Grazing (Mt Nr/yr);Fertilizer Use|Nitrogen (Tg N/yr);1;NULL;reg+glo
-Resources|Nitrogen|Cropland Budget|Inputs|+|Recycled Aboveground Crop Residues (Mt Nr/yr);Fertilizer Use|Nitrogen (Tg N/yr);1;NULL;reg+glo
+Resources|Nitrogen|Cropland Budget|Inputs|+|Ash from Burned Crop Residues (Mt Nr/yr);Fertilizer Use|Nitrogen (Tg N/yr);1;NULL;reg+glo
+Resources|Nitrogen|Cropland Budget|Inputs|+|Atmospheric Deposition (Mt Nr/yr);Fertilizer Use|Nitrogen (Tg N/yr);1;NULL;reg+glo
 Resources|Nitrogen|Cropland Budget|Inputs|+|Biological Fixation Freeliving Microorganisms (Mt Nr/yr);Fertilizer Use|Nitrogen (Tg N/yr);1;NULL;reg+glo
 Resources|Nitrogen|Cropland Budget|Inputs|+|Biological Fixation Symbiotic Crops (Mt Nr/yr);Fertilizer Use|Nitrogen (Tg N/yr);1;NULL;reg+glo
+Resources|Nitrogen|Cropland Budget|Inputs|+|Fertilizer (Mt Nr/yr);Fertilizer Use|Nitrogen (Tg N/yr);1;NULL;reg+glo
+Resources|Nitrogen|Cropland Budget|Inputs|+|Manure From Stubble Grazing (Mt Nr/yr);Fertilizer Use|Nitrogen (Tg N/yr);1;NULL;reg+glo
+Resources|Nitrogen|Cropland Budget|Inputs|+|Manure Recycled from Confinements (Mt Nr/yr);Fertilizer Use|Nitrogen (Tg N/yr);1;NULL;reg+glo
+Resources|Nitrogen|Cropland Budget|Inputs|+|Recycled Aboveground Crop Residues (Mt Nr/yr);Fertilizer Use|Nitrogen (Tg N/yr);1;NULL;reg+glo
+Resources|Nitrogen|Cropland Budget|Inputs|+|Recycled Belowground Crop Residues (Mt Nr/yr);Fertilizer Use|Nitrogen (Tg N/yr);1;NULL;reg+glo
+Resources|Nitrogen|Cropland Budget|Inputs|+|Seed (Mt Nr/yr);Fertilizer Use|Nitrogen (Tg N/yr);1;NULL;reg+glo
 ZERO (NA);Fertilizer Use|Phosphorus (Tg P/yr);1;NULL;reg+glo
 ZERO (NA);Fertilizer|Nitrogen|Intensity (t N/ha/yr);1;NULL;reg+glo
 ZERO (NA);Fertilizer|Phosphorus|Intensity (t P/ha/yr);1;NULL;reg+glo
@@ -151,11 +155,11 @@ Resources|Water|Withdrawal|Agriculture|Crops|+|Bioenergy crops (km3/yr);Water|Wi
 Resources|Water|Withdrawal|Agriculture|Crops|Crops|+|Cereals (km3/yr);Water|Withdrawal|Irrigation|Cereals (million m3/yr);1000;NULL;reg+glo
 Resources|Water|Withdrawal|Agriculture|Crops|Crops|+|Oil crops (km3/yr);Water|Withdrawal|Irrigation|Oilcrops (million m3/yr);1000;NULL;reg+glo
 Resources|Water|Withdrawal|Agriculture|Crops|Crops|+|Sugar crops (km3/yr);Water|Withdrawal|Irrigation|Sugarcrops (million m3/yr);1000;NULL;reg+glo
-Productivity|Yield by physical area|Crops|+|Cereals (t DM/ha);Yield|Cereals (t DM/ha/yr);1;NULL;reg+glo
-Productivity|Yield by physical area|+|Bioenergy crops (t DM/ha);Yield|Energy Crops (t DM/ha/yr);1;NULL;reg+glo
-Productivity|Yield by physical area|+|Crops (t DM/ha);Yield|Non-Energy Crops (t DM/ha/yr);1;NULL;reg+glo
-Productivity|Yield by physical area|Crops|+|Oil crops (t DM/ha);Yield|Oilcrops (t DM/ha/yr);1;NULL;reg+glo
-Productivity|Yield by physical area|Crops|+|Sugar crops (t DM/ha);Yield|Sugarcrops (t DM/ha/yr);1;NULL;reg+glo
+Productivity|Yield|Crops|Cereals (t DM/ha);Yield|Cereals (t DM/ha/yr);1;NULL;reg+glo
+Productivity|Yield|Bioenergy crops (t DM/ha);Yield|Energy Crops (t DM/ha/yr);1;NULL;reg+glo
+Productivity|Yield|Crops (t DM/ha);Yield|Non-Energy Crops (t DM/ha/yr);1;NULL;reg+glo
+Productivity|Yield|Crops|Oil crops (t DM/ha);Yield|Oilcrops (t DM/ha/yr);1;NULL;reg+glo
+Productivity|Yield|Crops|Sugar crops (t DM/ha);Yield|Sugarcrops (t DM/ha/yr);1;NULL;reg+glo
 Productivity|Landuse Intensity Indicator Tau (Index);Landuse intensity indicator Tau (Index);1;NULL;reg+glo
 Costs|TC (million US$05/yr);Costs|TC (million US$2005);1;NULL;reg+glo
 Biodiversity|BII (unitless);Biodiversity|BII (unitless);1;NULL;reg+glo
