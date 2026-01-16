@@ -15,16 +15,13 @@ data <- read.csv(paste(sep = "/", data_folder,data_file))
 
 
 ### CO2 emission profiles
-
 co2 <- dplyr::filter(data, Region=="World", BIOscen=="BIO00", Variable=="Emissions|CO2|AFOLU")
 co2[c("Region" , "SSPscen", "BIOscen", "SDGscen", "X1995", "X2000", "X2005", "X2010", "X2015")] <- c(NULL)
-
 co2[,4:17] <- apply(co2[,4:17], 2, function(x) as.numeric(x)) 
-#co2
-co2_cumu <- co2
-co2
-as.numeric(gsub('X', '', names(co2_cumu[1,4:17])))
 
+## cumulative emissions
+co2_cumu <- co2
+as.numeric(gsub('X', '', names(co2_cumu[1,4:17])))
 for (i in 1:12) {
   c <- co2_cumu[i,4:17] * c(5,5,5,5,5,5,5,5,5,10,10,10,10,10) / 1000
   for (j in 2:14) 
@@ -35,13 +32,16 @@ for (i in 1:12) {
 }
 co2_cumu$Unit <- "Gt CO2"
 co2_cumu$Variable <- "Emissions|CO2|AFOLU|Cumulative"
-#co2_cumu
-# Pick GHG000 - 366 Gt, GHG050 - 167 Gt, GHG400 - 76 Gt, GHG4000 - -86Gt, 
 
-### use these profiles to run other tests
+# co2_cumu
+# Pick four representative scenarios based on cumulative emissions by 2100:
+# GHG000: 366 Gt, GHG050: 167 Gt, GHG400: 76 Gt, GHG4000: -86Gt, 
+
+### use these scenarios for the plots to run other tests
 years_x <- co2[4:17]
 ghgs <- c("GHG000", "GHG050", "GHG400", "GHG4000")
 
+### create emissions dataframe
 df_co2 <- c()
 l <- 1
 for (g in ghgs) {
@@ -62,8 +62,7 @@ for (g in ghgs) {
 df_co2 <- as.data.frame(df_co2)
 df_co2
 
-### BII
-
+### create BII dataframe
 bii <- dplyr::filter(data, Region=="World", BIOscen=="BIO00", Variable=="Biodiversity|BII", GHGscen %in% ghgs)
 years_x <- bii[8:26]
 
@@ -83,7 +82,7 @@ for (y in colnames(years_x)) {
   }
 }
 
-a <- c()
+df_bii <- c()
 l <- 1
 for (g in ghgs) {
   bii_t <- dplyr::filter(bii, GHGscen == g)
@@ -92,17 +91,18 @@ for (g in ghgs) {
     o <- bii_t[,y]
     p <- bii_d[,y]
     
-    a$year[l] <- as.numeric(gsub('X', '', y))
-    a$ghg[l] <- g
-    a$bii[l] <- round(as.numeric(o),4)
-    a$biiDelta[l] <- round(as.numeric(p),2)
+    df_bii$year[l] <- as.numeric(gsub('X', '', y))
+    df_bii$ghg[l] <- g
+    df_bii$bii[l] <- round(as.numeric(o),4)
+    df_bii$biiDelta[l] <- round(as.numeric(p),2)
     
     l <- l+1
     
   }
 }
-a <- as.data.frame(a)
-d <- as.data.frame(co2_cumu)
+df_bii <- as.data.frame(df_bii)
+
+### define chart designs
 
 #lcols <- c("chocolate2", "dodgerblue4", "firebrick3", "darkorchid4")
 #lcols <- c("firebrick1", "firebrick2", "firebrick3", "firebrick4")
@@ -110,20 +110,19 @@ lcols <- c("#ed322e", "#bd3123", "#8c2c18", "#5d240e")
 #linetype=c("solid", "dashed", "dotted", "dotdash")
 
 lw = 0.4
-ts = 5
+ts = 10
 ts_sub = ts / 3.0
 
-ghg_labels <-c("High (366 Gt)", "Mid (167 Gt)", "Low (76 Gt)", "Neg (-86 Gt)")
-
+ghg_labels <-c("High", "Medium", "Low", "Baseline")
 
 m0 <- ggplot(data=df_co2, aes(x=year, y=co2_cumu, group=ghg)) + 
   #geom_line(aes(color=ghg, linetype=ghg), linewidth=lw) +
   geom_line(aes(color=ghg), linewidth=lw) +
   #  ylim(0.77,0.82) + 
-  ylab("Gt CO2") +
+  ylab(expression(paste('Cumulative AFOLU CO' , ''[2],' Emissions (Gt 2020-2100)'))) +
   xlab("Year") + 
   #scale_linetype_manual(name=expression("Cumulative CO"[2]),labels=ghg_labels, values=c("solid", "dashed", "dotted", "dotdash")) +
-  scale_color_manual(name=expression("Cumulative CO"[2]),labels=ghg_labels, values=lcols) +
+  scale_color_manual(name="Climate Policy Stringency",labels=ghg_labels, values=lcols) +
   scale_x_continuous(limits = c(2020,2100)) + 
   #labs(title = "Biodiversity ") +
   #theme(legend.position = c(.15, .2)) +
@@ -136,10 +135,12 @@ m0 <- ggplot(data=df_co2, aes(x=year, y=co2_cumu, group=ghg)) +
   theme(panel.grid.major = element_line(color = 'white', linewidth = lw/2)) +
   theme(panel.border = element_blank()) + 
   theme(axis.ticks = element_line(linewidth = lw/3, color="gray9"))
-#m0
-m0 <- m0  + theme(legend.position = "none")
-#combinePlots()
+m0
 ggsave(paste0(figure_folder, "figure1_0.png"), m0)
+m0 <- m0  + theme(legend.position = "none")
+m0
+#combinePlots()
+ggsave(paste0(figure_folder, "figure1_0_no-legend.png"), m0)
 
 m1 <- ggplot(data=a, aes(x=year, y=bii, group=ghg)) + 
   #geom_hline(yintercept = bii_years, color = "azure4", linetype = "dashed") +
