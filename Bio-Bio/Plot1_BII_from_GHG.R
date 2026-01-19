@@ -208,29 +208,9 @@ m1_none <- m1  + theme(legend.position = "none")
 ggsave(paste0(figure_folder, "figure1_1_legend-none.png"), m1_none)
 #combinePlots()
 
-### land plots for different GHG scenarios
-a <- c()
-l <- 1
-for (g in ghgs) {
-  bii_t <- dplyr::filter(bii, GHGscen == g)
-  bii_d <- dplyr::filter(biiDelta, GHGscen == g)
-  for (y in colnames(years_x)) {
-    o <- bii_t[,y]
-    p <- bii_d[,y]
-    
-    a$year[l] <- as.numeric(gsub('X', '', y))
-    a$ghg[l] <- g
-    a$bii[l] <- round(as.numeric(o),4)
-    a$biiDelta[l] <- round(as.numeric(p),2)
-    
-    l <- l+1
-    
-  }
-}
-a <- as.data.frame(a)
+### Subplot(s) 3: land plots for different GHG scenarios
 
-
-# Pick GHG000 - chocolate2, GHG050 - dodgerblue4, GHG400 - firebrick3, GHG4000 - darkorchid4
+# filter land data
 v_land <- c("Land Cover|Cropland", "Land Cover|Forest", "Land Cover|Other Land", "Land Cover|Pasture", "Land Cover|Urban")
 
 land <- dplyr::filter(data, Region=="World", BIOscen=="BIO00", GHGscen %in% ghgs, Variable %in% v_land)
@@ -240,27 +220,29 @@ land$varShort  <- sub(".*Other", "Other", land$varShort)
 land$varShort  <- sub(".*Crop", "Crop", land$varShort)
 land$varShort  <- sub(".*Pasture", "Pasture", land$varShort)
 land$Variable <- land$varShort
-#land
-v_land <- c("Cropland", "Forest", "Pasture", "Other Land")
-b <- c()
+
+v_land_short <- c("Cropland", "Forest", "Pasture", "Other Land")
+# create land dataframe
+df_land <- c()
 l <- 1
 for (g in ghgs) {
-  for (v in v_land) {
+  for (v in v_land_short) {
     land_t <- dplyr::filter(land, GHGscen == g, Variable == v)
     hist_t <- as.numeric(land_t$X1995)
     for (y in colnames(years_x)) {
       o <- land_t[,y]
       
-      b$year[l] <- as.numeric(gsub('X', '', y))
-      b$ghg[l] <- g
-      b$variable[l] <- v
-      b$area[l] <- as.numeric(o)
-      b$area_rel[l] <- b$area[l] / hist_t
+      df_land$year[l] <- as.numeric(gsub('X', '', y))
+      df_land$ghg[l] <- g
+      df_land$variable[l] <- v
+      df_land$area[l] <- as.numeric(o)
+      df_land$area_rel[l] <- b$area[l] / hist_t
       l <- l+1
     }
   }
 }
-b <- as.data.frame(b)
+df_land <- as.data.frame(df_land)
+df_land
 
 sideplot1_line <- function(var) {
 b_test <- b[b$variable == var,]
