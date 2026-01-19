@@ -115,7 +115,6 @@ lcols <- brewer.pal(4, brewer_palette)
 
 lw = 1
 ts = 30
-ts_sub = ts * 0.4
 ts_legend = ts * 0.6
 text_color = "gray25"
 
@@ -137,11 +136,11 @@ m0 <- ggplot(data=df_co2, aes(x=year, y=co2_cumu, group=ghg)) +
   theme(
     legend.text = element_text(size=ts_legend),
     legend.title = element_text(size=ts_legend), 
-    legend.margin=margin(c(0.1,0.1,0.1,0.1)),
+    legend.margin=margin_auto(1),
     legend.position = "right",
     legend.key.height = unit(0.005, "npc"), 
     legend.key.width = unit(0.01, "npc")) +  
-  theme(plot.margin = unit(c(0.1,0.1,0.1,0.1), "cm")) +
+  theme(plot.margin = unit(c(0.2,0.2,0.2,0.2), "cm")) + 
   theme(
     panel.background = element_blank(),
     panel.grid.major = element_blank(),
@@ -150,9 +149,11 @@ m0 <- ggplot(data=df_co2, aes(x=year, y=co2_cumu, group=ghg)) +
   theme(
     axis.line = element_line(linewidth = lw/2, color=text_color),
     axis.ticks = element_line(linewidth = lw/2, color=text_color),
-    axis.title = element_text(size = ts_legend))
+    axis.title = element_text(size = ts_legend),
+    axis.title.y.left = element_text(margin = margin(r = 5)))
 
 m0
+#ggsave(paste0(figure_folder, "figure1_0_legend-right.png"), m0, width = 3000, height = 2000, units = c("px"))
 ggsave(paste0(figure_folder, "figure1_0_legend-right.png"), m0)
 m0_bottom <- m0  + 
   theme(legend.position = "bottom") + 
@@ -164,47 +165,48 @@ mp_legend <- cowplot::get_legend(ggplotGrob(m0))
 #combinePlots()
 
 ### Subplot 2: BII Co-Benefits of Climate Policies
+ts_sub = ts * 0.25
+marker_line_color = "azure3"
+marker_text_color = "azure4"
+
 m1 <- ggplot(data=df_bii, aes(x=year, y=bii, group=ghg)) + 
-  #geom_hline(yintercept = bii_years, color = "azure4", linetype = "dashed") +
-  geom_segment(aes(x = 1995, xend = 2100, y = bii_years[1], yend = bii_years[1]), color = "azure3", linetype = "solid", linewidth = lw/2) +
-  #geom_segment(aes(x = 2000, xend = 2100, y = bii_years[2], yend = bii_years[2]), color = "azure4", linetype = "dashed", linewidth = 0.5) +
-  #geom_segment(aes(x = 2005, xend = 2100, y = bii_years[3], yend = bii_years[3]), color = "azure4", linetype = "dashed", linewidth = 0.5) + 
-  #geom_segment(aes(x = 2010, xend = 2100, y = bii_years[4], yend = bii_years[4]), color = "azure4", linetype = "dashed", linewidth = 0.5) + 
-  #geom_segment(aes(x = 2015, xend = 2100, y = bii_years[5], yend = bii_years[5]), color = "azure4", linetype = "dashed", linewidth = 0.5) + 
-  geom_segment(aes(x = 2020, xend = 2100, y = bii_years[6], yend = bii_years[6]), color = "azure3", linetype = "solid", linewidth = lw/2) + 
-  #geom_line(aes(color=ghg, linetype=ghg), linewidth=lw) +
+  geom_segment(aes(x = 1995, xend = 2100, y = bii_years[1], yend = bii_years[1]), color = marker_line_color, linetype = "solid", linewidth = lw/2) +
+  geom_segment(aes(x = 2020, xend = 2100, y = bii_years[6], yend = bii_years[6]), color = marker_line_color, linetype = "solid", linewidth = lw/2) + 
   geom_line(aes(color=ghg), linewidth=lw) +
   #  ylim(0.77,0.82) + 
   xlim(1995,2100) + 
   ylab("BII (1)") +
   xlab("Year") + 
-  #scale_linetype_manual(name=expression("Cumulative CO"[2]),labels=ghg_labels, values=c("solid", "dashed", "dotted", "dotdash")) +
-  scale_color_manual(name=expression("Cumulative CO"[2]),labels=ghg_labels, values=lcols) +
-  #labs(title = "Biodiversity ") +
-  annotate("text", x=2095, y=bii_years[1]+0.005, label="BII equiv.", color = "azure4", size=ts_sub) +
-  annotate("text", x=2095, y=bii_years[1]+0.002, label="1995", color = "azure4", size=ts_sub) +
-  #annotate("text", x=2100, y=bii_years[2]+0.0005, label="2000", color = "azure4", size=5) +
-  #annotate("text", x=2100, y=bii_years[2]+0.0005, label="2005", color = "azure4", size=5) +
-  #annotate("text", x=2100, y=bii_years[3]-0.0005, label="2010", color = "azure4", size=5) +
-  #annotate("text", x=2100, y=bii_years[4]-0.0005, label="2015", color = "azure4", size=5) +
-  annotate("text", x=2095, y=bii_years[6]-0.002, label="2020", color = "azure4", size=ts_sub) + 
-  #theme(legend.position = c(.15, .2)) +
-  theme(legend.key.height = unit(0.005, "npc"), legend.key.width = unit(0.01, "npc")) +
-  theme(text = element_text(size = ts, color="gray25")) +
-  theme(legend.title = element_text(size=ts*0.8), legend.margin=margin(c(0.3,6,0.3,2))) +
-  theme(panel.background = element_rect(fill = 'gray95')) +
-  theme(plot.margin = unit(c(0,0,0,0.05), "cm")) +
-  #theme(axis.line=element_blank())+
-  theme(panel.grid.major = element_line(color = 'white', linewidth = lw/2)) +
-  theme(panel.border = element_blank()) + 
-  theme(axis.ticks = element_line(linewidth = lw/3, color="gray9"))
+  scale_color_manual(name="Climate Policy Stringency",labels=ghg_labels, values=lcols) +
+  annotate("text", x=2094, y=bii_years[1]+0.004, label="BII equiv.", color = marker_text_color, size=ts_sub) +
+  annotate("text", x=2095, y=bii_years[1]+0.0015, label="1995", color = marker_text_color, size=ts_sub) +
+  annotate("text", x=2095, y=bii_years[6]-0.0015, label="2020", color = marker_text_color, size=ts_sub) + 
+  theme(text = element_text(
+    size = ts, 
+    color=text_color)) +
+  theme(
+    legend.text = element_text(size=ts_legend),
+    legend.title = element_text(size=ts_legend), 
+    legend.margin=margin_auto(1),
+    legend.position = "bottom",
+    legend.key.height = unit(0.02, "npc"), 
+    legend.key.width = unit(0.02, "npc")) +
+  theme(plot.margin = unit(c(0.2,0.2,0.2,0.2), "cm")) + 
+  theme(
+    panel.background = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.border = element_blank()) +
+  theme(
+    axis.line = element_line(linewidth = lw/2, color=text_color),
+    #axis.line=element_blank()
+    axis.ticks = element_line(linewidth = lw/2, color=text_color),
+    axis.title = element_text(size = ts_legend),
+    axis.title.y.left = element_text(margin = margin(r = 5)))
 m1
-mp_legend <- cowplot::get_legend(ggplotGrob(m1))
-m1 <- m1  + theme(legend.position = "none")
-#m1
-ggsave(paste0(figure_folder, "figure1_1.png"), m1)
-
-combinePlots()
+ggsave(paste0(figure_folder, "figure1_1_legend-bottom.png"), m1)
+m1_none <- m1  + theme(legend.position = "none")
+ggsave(paste0(figure_folder, "figure1_1_legend-none.png"), m1_none)
+#combinePlots()
 
 m2 <- ggplot(data=a, aes(x=year, y=biiDelta, group=ghg)) + 
   #geom_line(aes(color=ghg, linetype=ghg), linewidth=0.8) +
