@@ -245,50 +245,73 @@ df_land <- as.data.frame(df_land)
 df_land
 
 sideplot1_line <- function(var) {
-b_test <- b[b$variable == var,]
-ggplot(data=b_test, aes(x=year, y=area, group=ghg)) + 
-  #geom_line(aes(color=ghg, linetype=ghg), linewidth=lw) +
+plot_data <- df_land[df_land$variable == var,]
+ggplot(data=plot_data, aes(x=year, y=area, group=ghg)) + 
   geom_line(aes(color=ghg), linewidth=lw) +
-  #  ylim(0.77,0.82) + 
   xlim(1995,2100) + 
   ylab("Land cover (Mha)") +
   xlab("Year") + 
   ggtitle(var) +
-  #scale_linetype_manual(name=expression("A) Cumulative CO"[2]),labels=ghg_labels, values=c("solid", "dashed", "dotted", "dotdash")) +
   scale_color_manual(name=expression("A) Cumulative CO"[2]),labels=ghg_labels, values=lcols) +
-  #theme(legend.position = c(.15, .2)) +
-  theme(legend.key.height = unit(0.005, "npc"), legend.key.width = unit(0.01, "npc")) +
-  theme(text = element_text(size = ts, color="gray25")) +
-  theme(plot.title = element_text(size = ts * 0.8, vjust = -5, hjust = 0.1)) + 
-  #theme(legend.title = element_text(size=ts*0.8), legend.margin=margin(c(0.3,6,0.3,2))) +
-  theme(legend.position = "none") +
-  theme(panel.background = element_rect(fill = 'gray95')) +
-  theme(plot.margin = unit(c(0,0,0,0.05), "cm")) +
-  #theme(axis.line=element_blank())+
-  theme(panel.grid.major = element_line(color = 'white', linewidth = lw/2)) +
-  theme(panel.border = element_blank()) + 
-  theme(axis.ticks = element_line(linewidth = lw/3, color="gray9"))
+  theme(
+    text = element_text(
+      size = ts, 
+      color=text_color),
+    legend.position = "none",
+    panel.background = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.border = element_blank(),
+    plot.title = element_text(size = ts * 0.8, vjust = 0, hjust = 0.1),
+    plot.margin = unit(c(0.2,0.2,0.2,0.2), "cm"),
+    axis.line = element_line(linewidth = lw/2, color=text_color),
+    axis.ticks = element_line(linewidth = lw/2, color=text_color),
+    axis.title = element_text(size = ts_legend),
+    axis.title.y.left = element_text(margin = margin(r = 5)))
 }
 
-sl1 <- sideplot1_line(v_land[1])
-sl2 <- sideplot1_line(v_land[2])
-sl3 <- sideplot1_line(v_land[3])
-sl4 <- sideplot1_line(v_land[4])
-#combinePlots()
+sl1 <- sideplot1_line(v_land_short[1])
+ggsave(paste0(figure_folder, "figure1_2-1.png"), sl1)
+sl2 <- sideplot1_line(v_land_short[2])
+ggsave(paste0(figure_folder, "figure1_2-2.png"), sl2)
+sl3 <- sideplot1_line(v_land_short[3])
+ggsave(paste0(figure_folder, "figure1_2-3.png"), sl3)
+sl4 <- sideplot1_line(v_land_short[4])
+ggsave(paste0(figure_folder, "figure1_2-4.png"), sl4)
 ylab <- get_plot_component(sl1,"ylab-l")
 xlab <- get_plot_component(sl1,"xlab-b")
+#combinePlots()
 
-sl1 <- sl1 + theme(axis.text.x = element_blank(), axis.title = element_blank(), axis.ticks.x = element_blank()) +
-  theme(plot.margin = unit(c(0.1, 0.1, 0.00, 0.3), "cm"))
-#ggsave("figure1_side1.png", sl1)
-sl2 <- sl2 + theme(axis.text.x = element_blank(), axis.title = element_blank(), axis.ticks.x = element_blank())  +
-  theme(plot.margin = unit(c(0.1, 0.1, 0.00, 0), "cm"))
+# uppper left
+sl1_comb <- sl1 + theme(
+  axis.text.x = element_blank(), 
+  axis.ticks.x = element_blank(),
+  axis.line.x = element_blank(),
+  axis.title.x = element_blank(),
+  axis.title.y.left = element_blank(),
+  plot.margin = unit(c(0.1, 0.1, 0.00, 0.3), "cm"))
+sl1_comb
+# uppper right
+sl2_comb <- sl2 + theme(
+  axis.text.x = element_blank(), 
+  axis.title = element_blank(), 
+  axis.ticks.x = element_blank(),  
+  axis.line = element_blank(),
+  axis.title.y.left = element_blank(),
+  plot.margin = unit(c(0.1, 0.1, 0.00, 0), "cm"))
+# lower left
 #ggsave("figure1_side2.png", sl2)
-sl3 <- sl3 + theme(axis.title = element_blank()) +
-  theme(plot.margin = unit(c(-0.2, 0.1, 0.3, 0.3), "cm")) 
+sl3_comb <- sl3 + theme(
+  axis.title = element_blank(),
+  axis.title.y.left = element_blank(),
+  plot.margin = unit(c(-0.2, 0.1, 0.3, 0.3), "cm")) 
+sl3_comb
 #ggsave("figure1_side3.png", p3)
-sl4 <- sl4 + theme(axis.title = element_blank())  +
-  theme(plot.margin = unit(c(-0.2, 0.1, 0.3, 0), "cm")) 
+sl4_comb <- sl4 + theme(
+  axis.title = element_blank(),
+  axis.title.y.left = element_blank(),
+  axis.line.y = element_blank(),
+  plot.margin = unit(c(-0.2, 0.1, 0.3, 0), "cm")) 
+sl4_comb
 #ggsave("figure1_side4.png", p4)
 combinePlots()
 
