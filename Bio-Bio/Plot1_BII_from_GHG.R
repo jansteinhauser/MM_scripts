@@ -104,27 +104,27 @@ df_bii <- as.data.frame(df_bii)
 
 ### define chart designs
 
+ghg_labels <-c("Baseline", "Low", "Medium" ,"High")
+
 #lcols <- c("chocolate2", "dodgerblue4", "firebrick3", "darkorchid4")
 #lcols <- c("firebrick1", "firebrick2", "firebrick3", "firebrick4")
 #lcols <- c("#ed322e", "#bd3123", "#8c2c18", "#5d240e")
+#linetype=c("solid", "dashed", "dotted", "dotdash")
 brewer_palette <- "PuOr"
 lcols <- brewer.pal(4, brewer_palette)
-#linetype=c("solid", "dashed", "dotted", "dotdash")
 
 lw = 1
-ts = 20
-ts_sub = ts / 3.0
+ts = 30
+ts_sub = ts * 0.4
+ts_legend = ts * 0.6
 text_color = "gray25"
-
-ghg_labels <-c("Baseline", "Low", "Medium" ,"High")
-
 
 ### Subplot 1: Cumulative emissions
 m0 <- ggplot(data=df_co2, aes(x=year, y=co2_cumu, group=ghg)) + 
   geom_line(
     aes(color=ghg), 
     linewidth=lw) +
-  ylab(expression(paste('Cumulative AFOLU CO' , ''[2],' Emissions (Gt 2020-2100)'))) +
+  ylab(expression(paste('Cumulative AFOLU CO' , ''[2],' Emissions (Gt)'))) +
   xlab("Year") + 
   scale_color_manual(
     name="Climate Policy Stringency",
@@ -135,9 +135,10 @@ m0 <- ggplot(data=df_co2, aes(x=year, y=co2_cumu, group=ghg)) +
     size = ts, 
     color=text_color)) +
   theme(
-    legend.title = element_text(size=ts/2), 
-    legend.margin=margin(c(0.3,6,0.3,2)),
-    legend.position = "bottom",
+    legend.text = element_text(size=ts_legend),
+    legend.title = element_text(size=ts_legend), 
+    legend.margin=margin(c(0.1,0.1,0.1,0.1)),
+    legend.position = "right",
     legend.key.height = unit(0.005, "npc"), 
     legend.key.width = unit(0.01, "npc")) +  
   theme(plot.margin = unit(c(0.1,0.1,0.1,0.1), "cm")) +
@@ -148,7 +149,8 @@ m0 <- ggplot(data=df_co2, aes(x=year, y=co2_cumu, group=ghg)) +
   #theme(axis.line=element_blank())+
   theme(
     axis.line = element_line(linewidth = lw/2, color=text_color),
-    axis.ticks = element_line(linewidth = lw/2, color=text_color))
+    axis.ticks = element_line(linewidth = lw/2, color=text_color),
+    axis.title = element_text(size = ts_legend))
 
 m0
 ggsave(paste0(figure_folder, "figure1_0_legend-right.png"), m0)
