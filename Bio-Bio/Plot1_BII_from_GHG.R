@@ -111,38 +111,50 @@ brewer_palette <- "PuOr"
 lcols <- brewer.pal(4, brewer_palette)
 #linetype=c("solid", "dashed", "dotted", "dotdash")
 
-lw = 0.5
-ts = 13
+lw = 1
+ts = 20
 ts_sub = ts / 3.0
+text_color = "gray25"
 
 ghg_labels <-c("Baseline", "Low", "Medium" ,"High")
 
 
 ### Subplot 1: Cumulative emissions
 m0 <- ggplot(data=df_co2, aes(x=year, y=co2_cumu, group=ghg)) + 
-  #geom_line(aes(color=ghg, linetype=ghg), linewidth=lw) +
-  geom_line(aes(color=ghg), linewidth=lw) +
-  #  ylim(0.77,0.82) + 
+  geom_line(
+    aes(color=ghg), 
+    linewidth=lw) +
   ylab(expression(paste('Cumulative AFOLU CO' , ''[2],' Emissions (Gt 2020-2100)'))) +
   xlab("Year") + 
-  #scale_linetype_manual(name=expression("Cumulative CO"[2]),labels=ghg_labels, values=c("solid", "dashed", "dotted", "dotdash")) +
-  scale_color_manual(name="Climate Policy Stringency",labels=ghg_labels, values=lcols) +
-  #scale_color_brewer(palette = "PuOr") +
+  scale_color_manual(
+    name="Climate Policy Stringency",
+    labels=ghg_labels, 
+    values=lcols) +
   scale_x_continuous(limits = c(2020,2100)) + 
-  #labs(title = "Biodiversity ") +
-  #theme(legend.position = c(.15, .2)) +
-  theme(legend.key.height = unit(0.005, "npc"), legend.key.width = unit(0.01, "npc")) +
-  theme(text = element_text(size = ts, color="gray25")) +
-  theme(legend.title = element_text(size=ts*0.8), legend.margin=margin(c(0.3,6,0.3,2))) +
-  theme(panel.background = element_rect(fill = 'gray95')) +
-  theme(plot.margin = unit(c(0.05,0.1,0.05,0.05), "cm")) +
+  theme(text = element_text(
+    size = ts, 
+    color=text_color)) +
+  theme(
+    legend.title = element_text(size=ts/2), 
+    legend.margin=margin(c(0.3,6,0.3,2)),
+    legend.position = "bottom",
+    legend.key.height = unit(0.005, "npc"), 
+    legend.key.width = unit(0.01, "npc")) +  
+  theme(plot.margin = unit(c(0.1,0.1,0.1,0.1), "cm")) +
+  theme(
+    panel.background = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.border = element_blank()) +
   #theme(axis.line=element_blank())+
-  theme(panel.grid.major = element_line(color = 'white', linewidth = lw/2)) +
-  theme(panel.border = element_blank()) + 
-  theme(axis.ticks = element_line(linewidth = lw/3, color="gray9"))
+  theme(
+    axis.line = element_line(linewidth = lw/2, color=text_color),
+    axis.ticks = element_line(linewidth = lw/2, color=text_color))
+
 m0
 ggsave(paste0(figure_folder, "figure1_0_legend-right.png"), m0)
-m0_bottom <- m0  + theme(legend.position = "bottom")
+m0_bottom <- m0  + 
+  theme(legend.position = "bottom") + 
+  theme(legend.key.height = unit(0.02, "npc"), legend.key.width = unit(0.02, "npc"))
 ggsave(paste0(figure_folder, "figure1_0_legend-bottom.png"), m0_bottom)
 m0_none <- m0  + theme(legend.position = "none")
 ggsave(paste0(figure_folder, "figure1_0_legend-none.png"), m0_none)
