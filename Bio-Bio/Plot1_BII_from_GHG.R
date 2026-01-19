@@ -108,14 +108,14 @@ df_bii <- as.data.frame(df_bii)
 #lcols <- c("firebrick1", "firebrick2", "firebrick3", "firebrick4")
 #lcols <- c("#ed322e", "#bd3123", "#8c2c18", "#5d240e")
 brewer_palette <- "PuOr"
-lcols <- rev(brewer.pal(4, brewer_palette))
+lcols <- brewer.pal(4, brewer_palette)
 #linetype=c("solid", "dashed", "dotted", "dotdash")
 
 lw = 0.5
-ts = 15
+ts = 13
 ts_sub = ts / 3.0
 
-ghg_labels <-c("High", "Medium", "Low", "Baseline")
+ghg_labels <-c("Baseline", "Low", "Medium" ,"High")
 
 
 ### Subplot 1: Cumulative emissions
@@ -142,10 +142,11 @@ m0 <- ggplot(data=df_co2, aes(x=year, y=co2_cumu, group=ghg)) +
   theme(axis.ticks = element_line(linewidth = lw/3, color="gray9"))
 m0
 ggsave(paste0(figure_folder, "figure1_0_legend-right.png"), m0)
-m0 <- m0  + theme(legend.position = "bottom")
-ggsave(paste0(figure_folder, "figure1_0_legend-bottom.png"), m0)
-m0 <- m0  + theme(legend.position = "none")
-ggsave(paste0(figure_folder, "figure1_0_legend-none.png"), m0)
+m0_bottom <- m0  + theme(legend.position = "bottom")
+ggsave(paste0(figure_folder, "figure1_0_legend-bottom.png"), m0_bottom)
+m0_none <- m0  + theme(legend.position = "none")
+ggsave(paste0(figure_folder, "figure1_0_legend-none.png"), m0_none)
+mp_legend <- cowplot::get_legend(ggplotGrob(m0))
 #combinePlots()
 
 ### Subplot 2: BII Co-Benefits of Climate Policies
