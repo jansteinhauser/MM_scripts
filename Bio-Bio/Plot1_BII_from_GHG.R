@@ -106,15 +106,19 @@ df_bii <- as.data.frame(df_bii)
 
 #lcols <- c("chocolate2", "dodgerblue4", "firebrick3", "darkorchid4")
 #lcols <- c("firebrick1", "firebrick2", "firebrick3", "firebrick4")
-lcols <- c("#ed322e", "#bd3123", "#8c2c18", "#5d240e")
+#lcols <- c("#ed322e", "#bd3123", "#8c2c18", "#5d240e")
+brewer_palette <- "PuOr"
+lcols <- rev(brewer.pal(4, brewer_palette))
 #linetype=c("solid", "dashed", "dotted", "dotdash")
 
-lw = 0.4
-ts = 10
+lw = 0.5
+ts = 15
 ts_sub = ts / 3.0
 
 ghg_labels <-c("High", "Medium", "Low", "Baseline")
 
+
+### Subplot 1: Cumulative emissions
 m0 <- ggplot(data=df_co2, aes(x=year, y=co2_cumu, group=ghg)) + 
   #geom_line(aes(color=ghg, linetype=ghg), linewidth=lw) +
   geom_line(aes(color=ghg), linewidth=lw) +
@@ -123,6 +127,7 @@ m0 <- ggplot(data=df_co2, aes(x=year, y=co2_cumu, group=ghg)) +
   xlab("Year") + 
   #scale_linetype_manual(name=expression("Cumulative CO"[2]),labels=ghg_labels, values=c("solid", "dashed", "dotted", "dotdash")) +
   scale_color_manual(name="Climate Policy Stringency",labels=ghg_labels, values=lcols) +
+  #scale_color_brewer(palette = "PuOr") +
   scale_x_continuous(limits = c(2020,2100)) + 
   #labs(title = "Biodiversity ") +
   #theme(legend.position = c(.15, .2)) +
@@ -136,13 +141,15 @@ m0 <- ggplot(data=df_co2, aes(x=year, y=co2_cumu, group=ghg)) +
   theme(panel.border = element_blank()) + 
   theme(axis.ticks = element_line(linewidth = lw/3, color="gray9"))
 m0
-ggsave(paste0(figure_folder, "figure1_0.png"), m0)
+ggsave(paste0(figure_folder, "figure1_0_legend-right.png"), m0)
+m0 <- m0  + theme(legend.position = "bottom")
+ggsave(paste0(figure_folder, "figure1_0_legend-bottom.png"), m0)
 m0 <- m0  + theme(legend.position = "none")
-m0
+ggsave(paste0(figure_folder, "figure1_0_legend-none.png"), m0)
 #combinePlots()
-ggsave(paste0(figure_folder, "figure1_0_no-legend.png"), m0)
 
-m1 <- ggplot(data=a, aes(x=year, y=bii, group=ghg)) + 
+### Subplot 2: BII Co-Benefits of Climate Policies
+m1 <- ggplot(data=df_bii, aes(x=year, y=bii, group=ghg)) + 
   #geom_hline(yintercept = bii_years, color = "azure4", linetype = "dashed") +
   geom_segment(aes(x = 1995, xend = 2100, y = bii_years[1], yend = bii_years[1]), color = "azure3", linetype = "solid", linewidth = lw/2) +
   #geom_segment(aes(x = 2000, xend = 2100, y = bii_years[2], yend = bii_years[2]), color = "azure4", linetype = "dashed", linewidth = 0.5) +
@@ -176,6 +183,7 @@ m1 <- ggplot(data=a, aes(x=year, y=bii, group=ghg)) +
   theme(panel.grid.major = element_line(color = 'white', linewidth = lw/2)) +
   theme(panel.border = element_blank()) + 
   theme(axis.ticks = element_line(linewidth = lw/3, color="gray9"))
+m1
 mp_legend <- cowplot::get_legend(ggplotGrob(m1))
 m1 <- m1  + theme(legend.position = "none")
 #m1
