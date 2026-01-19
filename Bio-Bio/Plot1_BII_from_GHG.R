@@ -208,22 +208,6 @@ m1_none <- m1  + theme(legend.position = "none")
 ggsave(paste0(figure_folder, "figure1_1_legend-none.png"), m1_none)
 #combinePlots()
 
-m2 <- ggplot(data=a, aes(x=year, y=biiDelta, group=ghg)) + 
-  #geom_line(aes(color=ghg, linetype=ghg), linewidth=0.8) +
-  geom_line(aes(color=ghg), linewidth=0.8) +
-  #  ylim(0.77,0.82) + 
-  xlim(1995,2100) + 
-  ylab("BII Change (%, rel. to 1995)") +
-  xlab("Year") +
-  #scale_linetype_manual(name="Cumulative CO2",labels=ghg_labels, values=c("solid", "dashed", "dotted", "dotdash")) +
-  scale_color_manual(name="Cumulative CO2",labels=ghg_labels, values=lcols) +
-  #scale_color_discrete(name="Cumulative CO2",labels=ghg_labels) +
-  labs(title = "BII vs CO2 Emissions (0 US$2005/GJ)", tag = "A") +
-  theme(text = element_text(size = ts, color="gray25")) +
-  theme(axis.ticks = element_line(linewidth = lw/3, color="gray9"))
-#m2
-
-
 ### land plots for different GHG scenarios
 a <- c()
 l <- 1
