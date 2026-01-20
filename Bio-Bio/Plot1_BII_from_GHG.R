@@ -129,7 +129,7 @@ m0 <- ggplot(data=df_co2, aes(x=year, y=co2_cumu, group=ghg)) +
     name="Climate Policy Stringency",
     labels=ghg_labels, 
     values=lcols) +
-  scale_x_continuous(limits = c(2020,2100)) + 
+  scale_x_continuous(limits = c(2020,2110), breaks = scales::pretty_breaks(n = 3)) + 
   theme(text = element_text(
     size = ts, 
     color=text_color)) +
@@ -174,7 +174,7 @@ m1 <- ggplot(data=df_bii, aes(x=year, y=bii, group=ghg)) +
   geom_segment(aes(x = 2020, xend = 2100, y = bii_years[6], yend = bii_years[6]), color = marker_line_color, linetype = "solid", linewidth = lw/2) + 
   geom_line(aes(color=ghg), linewidth=lw) +
   #  ylim(0.77,0.82) + 
-  xlim(1995,2100) + 
+  scale_x_continuous(limits = c(1995,2110), breaks = scales::pretty_breaks(n = 4)) + 
   ylab("BII (1)") +
   xlab("Year") + 
   scale_color_manual(name="Climate Policy Stringency",labels=ghg_labels, values=lcols) +
@@ -209,10 +209,9 @@ ggsave(paste0(figure_folder, "figure1_1_legend-none.png"), m1_none)
 #combinePlots()
 
 ### helper plot: Relative BII change
-
 m1_relative <- ggplot(data=df_bii, aes(x=year, y=biiDelta, group=ghg)) + 
   geom_line(aes(color=ghg), linewidth=0.8) +
-  xlim(1995,2100) + 
+  xlim(1995,2110) + 
   ylab("BII Change (%, rel. to 1995)") +
   xlab("Year") +
   labs(title = "BII vs CO2 Emissions (0 US$2005/GJ)", tag = "A") +
@@ -283,7 +282,9 @@ ggplot(data=plot_data, aes(x=year, y=area, group=ghg)) +
   geom_line(aes(color=ghg), linewidth=lw) +
   xlim(1995,2100) + 
   ylab("Land cover (Mha)") +
-  xlab("Year") + 
+  xlab("Year") +
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 3)) +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 2)) +
   ggtitle(var) +
   scale_color_manual(name=expression("A) Cumulative CO"[2]),labels=ghg_labels, values=lcols) +
   theme(
@@ -303,6 +304,7 @@ ggplot(data=plot_data, aes(x=year, y=area, group=ghg)) +
 }
 
 sl1 <- sideplot1_line(v_land_short[1])
+sl1
 ggsave(paste0(figure_folder, "figure1_2-1.png"), sl1)
 sl2 <- sideplot1_line(v_land_short[2])
 ggsave(paste0(figure_folder, "figure1_2-2.png"), sl2)
@@ -310,8 +312,8 @@ sl3 <- sideplot1_line(v_land_short[3])
 ggsave(paste0(figure_folder, "figure1_2-3.png"), sl3)
 sl4 <- sideplot1_line(v_land_short[4])
 ggsave(paste0(figure_folder, "figure1_2-4.png"), sl4)
-ylab <- get_plot_component(sl1,"ylab-l")
-xlab <- get_plot_component(sl1,"xlab-b")
+ylab_sl <- get_plot_component(sl1,"ylab-l")
+xlab_sl <- get_plot_component(sl1,"xlab-b")
 #combinePlots()
 
 # uppper left
@@ -346,7 +348,7 @@ sl4_comb <- sl4 + theme(
   plot.margin = unit(c(-0.2, 0.1, 0.3, 0), "cm")) 
 sl4_comb
 #ggsave("figure1_side4.png", p4)
-combinePlots()
+#combinePlots()
 
 
 ### BII delta maps
@@ -419,27 +421,44 @@ m3_2 <- plot_map(ncfname_high, "High Climate Policy Stringency")
 ggsave(paste0(figure_folder, "figure1_3_2_legend-bottom.png"), m3_2)
 m3_2_none <- m3_2 + theme(legend.position="none")
 #combinePlots()
+m3_2
+
+### combine subplots
+
+createW1 <- function() {
+  w1 <- wrap_elements(get_plot_component(m1_relative, "ylab-l"), ignore_tag = TRUE) +
+    wrap_elements(get_y_axis(m2), ignore_tag = TRUE) +
+    m1_none + 
+    theme(plot.margin = unit(c( 0,0.2,0,0.2), "cm")) +
+    plot_layout(widths = c(1.5, 1, 27)) 
+  ggsave(paste0(figure_folder, "figure1_1_double.png"), w1)
+  w1
+}
+
+createW2 <- function() {
+  w2 <- plot_grid(sl1_comb, sl2_comb, sl3_comb, sl4_comb, 
+                  ncol = 2, rel_widths = c(1, 1), rel_heights = c(0.9,1))
+  w2 
+  ggsave(paste0(figure_folder, "figure1_2_cluster.png"), w2)
+  
+  w2_labels <- w2 + 
+    annotation_custom(xlab_sl, xmax = 1.08, ymax = 0.03) + annotation_custom(ylab_sl, xmin = -0.02, ymax = 1) + 
+    theme(
+      plot.margin = unit(c( 0.1,0.1,0.3,0.55), "cm"),
+      plot.background = element_rect(fill = "white", color = "white"))
+  w2_labels
+  ggsave(paste0(figure_folder, "figure1_2_double-labels.png"), w2_labels)
+  w2_labels
+}
 
 combinePlots <- function() {
-  label_color = "gray30"
-  label_size = 5
-  sub_label_size = 4
+  label_size = ts * 0.6
+  w1 <- createW1()
+  w2 <- createW2()
+  w_up <-plot_grid(m0_none, w1, w2, ncol = 3, rel_widths = c(0.5,0.8,1), labels = "AUTO", label_size = label_size)
+  ggsave(paste0(figure_folder, "figure1_0-3.png"), w_up, width = 5500, height = 2000, units = c("px"))
   
-  w1 <- wrap_elements(get_plot_component(m2, "ylab-l"), ignore_tag = TRUE) +
-    wrap_elements(get_y_axis(m2), ignore_tag = TRUE) +
-    m1 +
-    plot_layout(widths = c(0.7, 0.1, 30))
-  #w1 + theme(plot.margin = unit(c( 0,0,0,0.5), "cm"))
-  #w1 
-  ggsave("figure1_main-new.png", w1)
-  w2 <- plot_grid(sl1, sl2, sl3, sl4, ncol = 2, rel_widths = c(1, 0.9), rel_heights = c(0.9,1), label_x = c(0.2,0.12,0.2,0.12), label_y = c(0.9,0.9,1.03,1.03), labels = c("i","ii","iii","iv"), label_colour= label_color, label_size = sub_label_size)
-  w2
-  #w2 <- w2 + annotation_custom(sp_legend, xmax = 1, ymax = 1.05)
-  w2 <- w2 + annotation_custom(xlab, xmax = 1.05, ymax = 0.07) + annotation_custom(ylab, xmin = 0.0, ymax = 1.1)
-  #w2
-  w3 <- plot_grid(m0, w1, w2, ncol = 3, rel_widths = c(0.5, 1.3, 1.2), labels = c('A', 'B', 'C'), label_size = label_size, label_colour= label_color)  
-  #w3
-  ggsave(filename = "figure1_combo.png", width = 30, w3)
+  
   mar_s <- 1
   mar_t <- 0.2
   m0000 <- m0000 + theme(plot.margin = unit(c(mar_t,mar_s,0,0.1),"cm"))
