@@ -208,6 +208,38 @@ m1_none <- m1  + theme(legend.position = "none")
 ggsave(paste0(figure_folder, "figure1_1_legend-none.png"), m1_none)
 #combinePlots()
 
+### helper plot: Relative BII change
+
+m1_relative <- ggplot(data=df_bii, aes(x=year, y=biiDelta, group=ghg)) + 
+  geom_line(aes(color=ghg), linewidth=0.8) +
+  xlim(1995,2100) + 
+  ylab("BII Change (%, rel. to 1995)") +
+  xlab("Year") +
+  labs(title = "BII vs CO2 Emissions (0 US$2005/GJ)", tag = "A") +
+  scale_color_manual(name="Climate Policy Stringency",labels=ghg_labels, values=lcols) +
+  theme(text = element_text(
+    size = ts, 
+    color=text_color)) +
+  theme(
+    legend.text = element_text(size=ts_legend),
+    legend.title = element_text(size=ts_legend), 
+    legend.margin=margin_auto(1),
+    legend.position = "bottom",
+    legend.key.height = unit(0.02, "npc"), 
+    legend.key.width = unit(0.02, "npc")) +
+  theme(plot.margin = unit(c(0.2,0.2,0.2,0.2), "cm")) + 
+  theme(
+    panel.background = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.border = element_blank()) +
+  theme(
+    axis.line = element_line(linewidth = lw/2, color=text_color),
+    #axis.line=element_blank()
+    axis.ticks = element_line(linewidth = lw/2, color=text_color),
+    axis.title = element_text(size = ts_legend),
+    axis.title.y.left = element_text(margin = margin(r = 5)))
+m1_relative
+
 ### Subplot(s) 3: land plots for different GHG scenarios
 
 # filter land data
