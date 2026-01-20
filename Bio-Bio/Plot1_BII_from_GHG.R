@@ -38,7 +38,7 @@ co2_cumu$Variable <- "Emissions|CO2|AFOLU|Cumulative"
 # GHG000: 366 Gt, GHG050: 167 Gt, GHG400: 76 Gt, GHG4000: -86Gt, 
 
 ### use these scenarios for the plots to run other tests
-years_x <- co2[4:17]
+years_x <- co2[4:16]
 ghgs <- c("GHG000", "GHG050", "GHG400", "GHG4000")
 
 ### create emissions dataframe
@@ -60,11 +60,10 @@ for (g in ghgs) {
   }
 }
 df_co2 <- as.data.frame(df_co2)
-df_co2
 
 ### create BII dataframe
 bii <- dplyr::filter(data, Region=="World", BIOscen=="BIO00", Variable=="Biodiversity|BII", GHGscen %in% ghgs)
-years_x <- bii[8:26]
+years_x <- bii[8:25]
 
 bii_years <-  c(
   as.numeric(bii$X1995[1]),
@@ -129,7 +128,7 @@ m0 <- ggplot(data=df_co2, aes(x=year, y=co2_cumu, group=ghg)) +
     name="Climate Policy Stringency",
     labels=ghg_labels, 
     values=lcols) +
-  scale_x_continuous(limits = c(2020,2110), breaks = scales::pretty_breaks(n = 3)) + 
+  scale_x_continuous(limits = c(2020,2110), breaks = scales::pretty_breaks(n = 3)) +
   theme(text = element_text(
     size = ts, 
     color=text_color)) +
@@ -151,7 +150,6 @@ m0 <- ggplot(data=df_co2, aes(x=year, y=co2_cumu, group=ghg)) +
     axis.ticks = element_line(linewidth = lw/2, color=text_color),
     axis.title = element_text(size = ts_legend),
     axis.title.y.left = element_text(margin = margin(r = 5)))
-
 m0
 #ggsave(paste0(figure_folder, "figure1_0_legend-right.png"), m0, width = 3000, height = 2000, units = c("px"))
 ggsave(paste0(figure_folder, "figure1_0_legend-right.png"), m0)
@@ -168,7 +166,6 @@ m0_none <- m0  + theme(legend.position = "none")
 ggsave(paste0(figure_folder, "figure1_0_legend-none.png"), m0_none)
 m0_legend <- cowplot::get_legend(ggplotGrob(m0_bottom))
 m0_bottom
-#combinePlots()
 
 ### Subplot 2: BII Co-Benefits of Climate Policies
 ts_sub = ts * 0.25
@@ -286,10 +283,9 @@ sideplot1_line <- function(var) {
 plot_data <- df_land[df_land$variable == var,]
 ggplot(data=plot_data, aes(x=year, y=area, group=ghg)) + 
   geom_line(aes(color=ghg), linewidth=lw) +
-  xlim(1995,2100) + 
   ylab("Land cover (Mha)") +
   xlab("Year") +
-  scale_x_continuous(breaks = scales::pretty_breaks(n = 3)) +
+  scale_x_continuous(limits = c(1995,2110), breaks = scales::pretty_breaks(n = 3)) +
   scale_y_continuous(breaks = scales::pretty_breaks(n = 2)) +
   ggtitle(var) +
   scale_color_manual(name=expression("A) Cumulative CO"[2]),labels=ghg_labels, values=lcols) +
@@ -415,8 +411,6 @@ plot_map <- function(file, t = "") {
 
 
 m3_1 <- plot_map(ncfname_base, "Baseline")
-m3_1
-
 ggsave(paste0(figure_folder, "figure1_3_1_legend-bottom.png"), m3_1)
 m3_legend <- cowplot::get_legend(ggplotGrob(m3_1))
 combinePlots()
@@ -451,7 +445,7 @@ createW2 <- function() {
       plot.margin = unit(c( 0.1,0.1,0.3,0.55), "cm"),
       plot.background = element_rect(fill = "white", color = "white"))
   w2_labels
-  ggsave(paste0(figure_folder, "figure1_2_double-labels.png"), w2_labels)
+  ggsave(paste0(figure_folder, "figure1_2_cluster-labels.png"), w2_labels)
   w2_labels
 }
 
