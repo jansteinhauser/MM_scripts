@@ -403,9 +403,9 @@ plot_map <- function(file, t = "") {
           legend.position = "bottom",
           legend.title.position = "top",
           legend.title = element_text(
-            size=ts*0.8,
+            size=ts_legend,
             hjust = 0.5),
-          legend.margin=margin(1,1,1,1),
+          legend.margin=margin(5,30,5,30),
           legend.key.width = unit(.05, "npc"),
           legend.key.height = unit(.03, "npc"),
           legend.direction = 'horizontal',
@@ -415,9 +415,11 @@ plot_map <- function(file, t = "") {
 
 
 m3_1 <- plot_map(ncfname_base, "Baseline")
-#ggsave(paste0(figure_folder, "figure1_3_legend-bottom.png"), m3_1, width = 4000, height = 2000, units = c("px"))
+m3_1
+
 ggsave(paste0(figure_folder, "figure1_3_1_legend-bottom.png"), m3_1)
 m3_legend <- cowplot::get_legend(ggplotGrob(m3_1))
+combinePlots()
 m3_1_none <- m3_1 + theme(legend.position="none")
 
 m3_2 <- plot_map(ncfname_high, "High Climate Policy Stringency")
@@ -492,50 +494,3 @@ combinePlots <- function() {
   ggsave(paste0(figure_folder, "figure1_final.png"), w_legends, width = 5500, height = 3450, units = c("px"))
   w_legends
 }
-
-t_out[[1]][[2]] <- t_out[[1]][[2]] + plot_layout(tag_level = 'new')
-t_out[[2]] <-t_out[[2]] + plot_layout(tag_level = 'new')
-t_out <- t_out + plot_annotation(tag_levels = c('A', '1'), tag_sep	= '.')
-
-### with tags
-
-t1 <- w1
-t2 <- ( p1 | p2 ) / (p3 | p4) + plot_layout(widths = c(1, 0.9), heights = c(1,1.1)) 
-t2 <- wrap_elements(ylab_sl, ignore_tag = TRUE) + t2 + plot_layout(widths = c(0.3, 29))
-t2
-#  annotation_custom(xlab, xmin = 0, xmax = 2100, ymin = 0, ymax = 0) + 
-#  annotation_custom(ylab, xmin = 0, xmax = 2100, ymin = 0, ymax = 0)
-#wrap_elements(ylab, ignore_tag = TRUE) + 
-#wrap_elements(xlab, ignore_tag = TRUE) +
-# t2 + plot_layout(widths = c(0.7, 0.5, 30))
-
-#wrap_elements(ylab) + t2 + plot_layout(widths = c(0.7, 30))  # + wrap_elements(ylab(ylab))
-
-#?wrap_elements
-
-#wrap_elements(get_plot_component(m2, "ylab-l"), ignore_tag = TRUE) +
-# wrap_elements(get_y_axis(m2), ignore_tag = TRUE) +
-#m1 +
-#plot_layout(widths = c(0.7, 0.1, 30))
-
-
-mar_s <- 1
-m0000 <- m0000 + theme(plot.margin = unit(c(0,mar_s,0,0),"cm"))
-m4000 <- m4000 + theme(plot.margin = unit(c(0,0,0,mar_s),"cm"))
-t3 <-  (m0000 | m4000) 
-xpos = -250
-
-t3 <- t3 + 
-  annotation_custom(mp_legend, xmax = xpos, ymin = 300) +
-  annotation_custom(sp_legend, xmax = xpos, ymin = 0) +
-  annotation_custom(mlegend, xmax=xpos, ymin = -300) +
-  annotation_custom(xlab, xmax=xpos+100, ymin = 150)
-t3
-t_out <- (t1 | t2) / t3 
-#t_out
-
-t_out[[1]][[2]] <- t_out[[1]][[2]] + plot_layout(tag_level = 'new')
-t_out[[2]] <-t_out[[2]] + plot_layout(tag_level = 'new')
-t_out <- t_out + plot_annotation(tag_levels = c('A', '1'), tag_sep	= '.')
-ggsave(filename = "figure1_new_tags.png", width = 7,  height = 3.6, t_out)
-
