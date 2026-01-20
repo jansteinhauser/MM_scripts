@@ -156,12 +156,18 @@ m0
 #ggsave(paste0(figure_folder, "figure1_0_legend-right.png"), m0, width = 3000, height = 2000, units = c("px"))
 ggsave(paste0(figure_folder, "figure1_0_legend-right.png"), m0)
 m0_bottom <- m0  + 
-  theme(legend.position = "bottom") + 
-  theme(legend.key.height = unit(0.02, "npc"), legend.key.width = unit(0.02, "npc"))
+  theme(legend.position = "bottom",
+        legend.key.height = unit(0.02, "npc"), 
+        legend.key.width = unit(0.03, "npc"),
+        legend.key.spacing.x = unit(0.02, "npc"),
+        legend.background = element_blank(),
+        legend.title.position = "right",
+        legend.title = element_text(margin = margin(l = 15)))
 ggsave(paste0(figure_folder, "figure1_0_legend-bottom.png"), m0_bottom)
 m0_none <- m0  + theme(legend.position = "none")
 ggsave(paste0(figure_folder, "figure1_0_legend-none.png"), m0_none)
-m0_legend <- cowplot::get_legend(ggplotGrob(m0))
+m0_legend <- cowplot::get_legend(ggplotGrob(m0_bottom))
+m0_bottom
 #combinePlots()
 
 ### Subplot 2: BII Co-Benefits of Climate Policies
@@ -232,8 +238,8 @@ m1_relative <- ggplot(data=df_bii, aes(x=year, y=biiDelta, group=ghg)) +
     panel.grid.major = element_blank(),
     panel.border = element_blank()) +
   theme(
-    axis.line = element_line(linewidth = lw/2, color=text_color),
-    #axis.line=element_blank()
+    #axis.line = element_line(linewidth = lw/2, color=text_color),
+    axis.line=element_blank(),
     axis.ticks = element_line(linewidth = lw/2, color=text_color),
     axis.title = element_text(size = ts_legend),
     axis.title.y.left = element_text(margin = margin(r = 5)))
@@ -267,7 +273,7 @@ for (g in ghgs) {
       df_land$ghg[l] <- g
       df_land$variable[l] <- v
       df_land$area[l] <- as.numeric(o)
-      df_land$area_rel[l] <- b$area[l] / hist_t
+      df_land$area_rel[l] <- df_land$area[l] / hist_t
       l <- l+1
     }
   }
@@ -314,7 +320,6 @@ sl4 <- sideplot1_line(v_land_short[4])
 ggsave(paste0(figure_folder, "figure1_2-4.png"), sl4)
 ylab_sl <- get_plot_component(sl1,"ylab-l")
 xlab_sl <- get_plot_component(sl1,"xlab-b")
-#combinePlots()
 
 # uppper left
 sl1_comb <- sl1 + theme(
@@ -366,7 +371,7 @@ plot_map <- function(file, t = "") {
   landmask <- nc_open(file)
   bii_nc <- ncvar_get(landmask,dname)
   nc_close(landmask)
-  bii_delta <- a[,,18]-a[,,1]
+  bii_delta <- bii_nc[,,18]-bii_nc[,,1]
 
   land_df <- melt(bii_delta)
   land_df$Y <- (361-land_df$X2)
@@ -377,7 +382,7 @@ plot_map <- function(file, t = "") {
   ggplot(aes(x = X1, y = Y, fill = value), data = land_df) + 
     geom_raster() + 
     coord_equal() + 
-    scale_fill_gradientn(name = expression("BII"~Delta~"2020-2100 (1)"),
+    scale_fill_gradientn(name = expression("BII"~Delta~" 2020-2100 (1)"),
                          #paste0("BII ", expression(Delta), "2100 - 2020"), 
                          na.value = "gray60", colours = myPalette(9), limits = c(-0.4, 0.4)) +
     scale_x_continuous(expand=c(0,0)) + 
@@ -393,18 +398,16 @@ plot_map <- function(file, t = "") {
           text = element_text(
             size = ts, 
             color="gray25"),
-          title = element_text(size = ts * 0.8),
+          title = element_text(size = ts * 0.6),
           legend.text = element_text(size = ts_legend),
           legend.position = "bottom",
           legend.title.position = "top",
           legend.title = element_text(
             size=ts*0.8,
             hjust = 0.5),
-          legend.margin=margin(c(1,1,1,1)),
+          legend.margin=margin(1,1,1,1),
           legend.key.width = unit(.05, "npc"),
           legend.key.height = unit(.03, "npc"),
-          #          legend.position = c(.5, 0.07),
-          #          legend.position = "none",
           legend.direction = 'horizontal',
           plot.title = element_text(hjust = 0.03)) +
     ggtitle(t) 
@@ -420,14 +423,13 @@ m3_1_none <- m3_1 + theme(legend.position="none")
 m3_2 <- plot_map(ncfname_high, "High Climate Policy Stringency")
 ggsave(paste0(figure_folder, "figure1_3_2_legend-bottom.png"), m3_2)
 m3_2_none <- m3_2 + theme(legend.position="none")
-#combinePlots()
-m3_2
+combinePlots()
 
 ### combine subplots
 
 createW1 <- function() {
   w1 <- wrap_elements(get_plot_component(m1_relative, "ylab-l"), ignore_tag = TRUE) +
-    wrap_elements(get_y_axis(m2), ignore_tag = TRUE) +
+    wrap_elements(get_y_axis(m1_relative), ignore_tag = TRUE) +
     m1_none + 
     theme(plot.margin = unit(c( 0,0.2,0,0.2), "cm")) +
     plot_layout(widths = c(1.5, 1, 27)) 
@@ -451,34 +453,45 @@ createW2 <- function() {
   w2_labels
 }
 
+createW3 <- function() {
+  mar_s <- 0.2
+  mar_t <- 1.8
+  m3_1_none <- m3_1_none + theme(plot.margin = unit(c(mar_t,mar_s,0,0),"cm"))
+  m3_2_none <- m3_2_none + theme(plot.margin = unit(c(mar_t,0,0,mar_s),"cm"))
+  w3 <- plot_grid(m3_1_none, m3_2_none, ncol = 2) + 
+    theme(
+      plot.margin = unit(c(0.1,0.1,0.3,0.1), "cm"),
+      plot.background = element_rect(fill = "white", color = "white")) 
+  w3
+}
+
 combinePlots <- function() {
   label_size = ts * 0.6
+  
+  # create upper half of plot
   w1 <- createW1()
   w2 <- createW2()
-  w_up <-plot_grid(m0_none, w1, w2, ncol = 3, rel_widths = c(0.5,0.8,1), labels = "AUTO", label_size = label_size)
-  ggsave(paste0(figure_folder, "figure1_0-3.png"), w_up, width = 5500, height = 2000, units = c("px"))
+  w_up <-plot_grid(m0_none, w1, w2, 
+                   ncol = 3, rel_widths = c(0.5,0.8,1), 
+                   labels = "AUTO", label_size = label_size)
+  ggsave(paste0(figure_folder, "figure1_top.png"), w_up, width = 5500, height = 2000, units = c("px"))
   
+  # create lower half of plot
+  w_down <-createW3()
+  ggsave(paste0(figure_folder, "figure1_bottom.png"), w_down, width = 5500, height = 1500, units = c("px"))
   
-  mar_s <- 1
-  mar_t <- 0.2
-  m0000 <- m0000 + theme(plot.margin = unit(c(mar_t,mar_s,0,0.1),"cm"))
-  m4000 <- m4000 + theme(plot.margin = unit(c(mar_t,0.1,0,mar_s),"cm"))
-  w4 <- plot_grid(m0000, m4000, ncol = 2, labels = c('i', 'ii'), label_size = sub_label_size, label_x = c(0.021, 0.12), label_y = 0.96, label_colour= label_color) 
-  w4 <- w4 + theme(plot.margin=unit(c(0,0,0,0), "cm")) 
-  w5 <- plot_grid(w3, w4, nrow = 2, labels = c('', 'D'), label_size = label_size, label_colour= label_color) #
-  xpos <- 0.99
-  w5 <- w5 + 
-    annotation_custom(mp_legend, xmax = xpos+0.01, ymax = 0.7) + 
-#    annotation_custom(sp_legend, xmax = xpos, ymax = 0.5) + 
-    annotation_custom(mlegend, xmax = xpos+0.01, ymax = 0.4)
+  # combine halfs
+  w <- plot_grid(w_up, w_down, nrow = 2, rel_heights = c(1,1),
+                 labels = c('', 'D'), label_size = label_size, label_y = 0.94) 
+  ggsave(paste0(figure_folder, "figure1_none.png"), w, width = 5500, height = 3450, units = c("px"))
   
-  
-  ggsave(filename = "figure1_new_new_new.png", width = 7,  height = 3.6, w5)
-  print(w5)
+  #add legends
+  w_legends <- w + 
+    annotation_custom(m0_legend, xmax = 1, ymax = 0.98) + 
+    annotation_custom(m3_legend, xmax = 1, ymax = 0.1)
+  ggsave(paste0(figure_folder, "figure1_final.png"), w_legends, width = 5500, height = 3450, units = c("px"))
+  w_legends
 }
-combinePlots()
-w5
-
 
 t_out[[1]][[2]] <- t_out[[1]][[2]] + plot_layout(tag_level = 'new')
 t_out[[2]] <-t_out[[2]] + plot_layout(tag_level = 'new')
@@ -488,7 +501,7 @@ t_out <- t_out + plot_annotation(tag_levels = c('A', '1'), tag_sep	= '.')
 
 t1 <- w1
 t2 <- ( p1 | p2 ) / (p3 | p4) + plot_layout(widths = c(1, 0.9), heights = c(1,1.1)) 
-t2 <- wrap_elements(ylab, ignore_tag = TRUE) + t2 + plot_layout(widths = c(0.3, 29))
+t2 <- wrap_elements(ylab_sl, ignore_tag = TRUE) + t2 + plot_layout(widths = c(0.3, 29))
 t2
 #  annotation_custom(xlab, xmin = 0, xmax = 2100, ymin = 0, ymax = 0) + 
 #  annotation_custom(ylab, xmin = 0, xmax = 2100, ymin = 0, ymax = 0)
