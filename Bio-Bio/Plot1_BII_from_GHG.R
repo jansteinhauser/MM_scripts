@@ -161,7 +161,7 @@ m0_bottom <- m0  +
 ggsave(paste0(figure_folder, "figure1_0_legend-bottom.png"), m0_bottom)
 m0_none <- m0  + theme(legend.position = "none")
 ggsave(paste0(figure_folder, "figure1_0_legend-none.png"), m0_none)
-mp_legend <- cowplot::get_legend(ggplotGrob(m0))
+m0_legend <- cowplot::get_legend(ggplotGrob(m0))
 #combinePlots()
 
 ### Subplot 2: BII Co-Benefits of Climate Policies
@@ -244,6 +244,7 @@ for (g in ghgs) {
 df_land <- as.data.frame(df_land)
 df_land
 
+# Create single land variable side plot
 sideplot1_line <- function(var) {
 plot_data <- df_land[df_land$variable == var,]
 ggplot(data=plot_data, aes(x=year, y=area, group=ghg)) + 
@@ -316,28 +317,24 @@ sl4_comb
 combinePlots()
 
 
- ### BII delta maps
+### BII delta maps
 
-ncpath <- "Disagg data/BII00/GHG000/"
-ncname <- "cell.bii_0.5"  
-ncfname <- paste(ncpath, ncname, ".nc", sep="")
-ncpath2 <- "Disagg data/BII00/GHG4000/"
-ncfname2 <- paste(ncpath2, ncname, ".nc", sep="")
-#plot_map(ncfname)
+ncname <- "cell.bii_0.5"
+ncpath_base <- "/Disagg data/BII00/GHG000/"
+ncfname_base <- paste(data_folder, ncpath_base, ncname, ".nc", sep="")
+ncpath_high <- "/Disagg data/BII00/GHG4000/"
+ncfname_high <- paste(data_folder, ncpath_high, ncname, ".nc", sep="")
 
+
+# Plot a single delta map
 plot_map <- function(file, t = "") {
   dname <- "Variable"
-  
   landmask <- nc_open(file)
-  a <- ncvar_get(landmask,dname)
+  bii_nc <- ncvar_get(landmask,dname)
   nc_close(landmask)
-  b <- a
-  
-  b[,,18] <- a[,,18]-a[,,1]
-  c <- b[,,18]
-  
-  land_df
-  land_df <- melt(c)
+  bii_delta <- a[,,18]-a[,,1]
+
+  land_df <- melt(bii_delta)
   land_df$Y <- (361-land_df$X2)
   
   myPalette <- colorRampPalette(brewer.pal(11, "RdBu"))
@@ -346,24 +343,32 @@ plot_map <- function(file, t = "") {
   ggplot(aes(x = X1, y = Y, fill = value), data = land_df) + 
     geom_raster() + 
     coord_equal() + 
-    scale_fill_gradientn(name = expression("BII"~Delta~" 2020-2100"),
+    scale_fill_gradientn(name = expression("BII"~Delta~"2020-2100 (1)"),
                          #paste0("BII ", expression(Delta), "2100 - 2020"), 
                          na.value = "gray60", colours = myPalette(9), limits = c(-0.4, 0.4)) +
     scale_x_continuous(expand=c(0,0)) + 
     scale_y_continuous(expand=c(0,0)) + 
-    theme(axis.line=element_blank(),axis.text.x=element_blank(),
-          axis.text.y=element_blank(),axis.ticks=element_blank(),
-          axis.title.x=element_blank(),
-          axis.title.y=element_blank(),
-          panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
-          panel.grid.minor=element_blank()) +
-    theme(text = element_text(size = ts, color="gray25"),
+    theme(axis.line=element_blank(),
+          axis.text=element_blank(),
+          axis.ticks=element_blank(),
+          axis.title=element_blank(),
+          panel.background=element_blank(),
+          panel.border=element_blank(),
+          panel.grid.major=element_blank(),
+          panel.grid.minor=element_blank(),
+          text = element_text(
+            size = ts, 
+            color="gray25"),
           title = element_text(size = ts * 0.8),
-          legend.title.position = "top", 
-          legend.title = element_text(size=ts*0.8),
-          legend.margin=margin(c(2,3,2,3)),
-          legend.key.width = unit(.01, "npc"),
-          legend.key.height = unit(.01, "npc"),
+          legend.text = element_text(size = ts_legend),
+          legend.position = "bottom",
+          legend.title.position = "top",
+          legend.title = element_text(
+            size=ts*0.8,
+            hjust = 0.5),
+          legend.margin=margin(c(1,1,1,1)),
+          legend.key.width = unit(.05, "npc"),
+          legend.key.height = unit(.03, "npc"),
           #          legend.position = c(.5, 0.07),
           #          legend.position = "none",
           legend.direction = 'horizontal',
@@ -372,13 +377,16 @@ plot_map <- function(file, t = "") {
 }
 
 
-m0000 <- plot_map(ncfname, "High cumulative emissions")
-mlegend <- cowplot::get_legend(ggplotGrob(m0000))
-m0000 <- m0000 + theme(legend.position="none")
-#m0000
-m4000 <- plot_map(ncfname2, "Negative cumulative emissions")
-m4000 <- m4000 + theme(legend.position="none")
-combinePlots()
+m3_1 <- plot_map(ncfname_base, "Baseline")
+#ggsave(paste0(figure_folder, "figure1_3_legend-bottom.png"), m3_1, width = 4000, height = 2000, units = c("px"))
+ggsave(paste0(figure_folder, "figure1_3_1_legend-bottom.png"), m3_1)
+m3_legend <- cowplot::get_legend(ggplotGrob(m3_1))
+m3_1_none <- m3_1 + theme(legend.position="none")
+
+m3_2 <- plot_map(ncfname_high, "High Climate Policy Stringency")
+ggsave(paste0(figure_folder, "figure1_3_2_legend-bottom.png"), m3_2)
+m3_2_none <- m3_2 + theme(legend.position="none")
+#combinePlots()
 
 combinePlots <- function() {
   label_color = "gray30"
