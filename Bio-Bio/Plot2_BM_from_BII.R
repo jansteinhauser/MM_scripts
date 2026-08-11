@@ -9,6 +9,9 @@ library(RColorBrewer)
 library(ncdf4)
 library(plotly)
 
+data_folder <- "/home/j/Documents/IIASA/MM-Emulator"
+figure_folder <- paste(sep = "/", data_folder,"figures/")
+
 prep_z <- function(k){
   bm <- dplyr::filter(k, Region=="World", GHGscen=="GHG000", Variable=="Primary Energy|Biomass")
   bm[c("Region" , "SSPscen", "GHGscen", "SDGscen", "X1995", "X2000", "X2005", "X2010", "X2015")] <- c(NULL)
@@ -18,7 +21,7 @@ prep_z <- function(k){
   for (i in 1:7) {
     bv <- append(bv,bm[i,16])
   }
-  #print(bm)
+  print(bm)
   return(bv)
 }
 
@@ -62,10 +65,16 @@ bi_interpolate <- function (dataS, dataT, n = 9) {
   return(mv)
 }
 
-data00 <- read.csv("magpie_input_MP00BI00nov23.csv")
-data70 <- read.csv("magpie_input_MP00BI70nov23.csv")
-data74 <- read.csv("magpie_input_MP00BI74nov23.csv")
-data78 <- read.csv("magpie_input_MP00BI78nov23.csv")
+### Data prep
+
+data00 <- read.csv(paste(sep = "/", data_folder,"magpie_input_MP00BI00nov23.csv"))
+data70 <- read.csv(paste(sep = "/", data_folder,"magpie_input_MP00BI70nov23.csv"))
+data74 <- read.csv(paste(sep = "/", data_folder,"magpie_input_MP00BI74nov23.csv"))
+data78 <- read.csv(paste(sep = "/", data_folder,"magpie_input_MP00BI78nov23.csv"))
+
+data_years <- data00
+data_years[c("Region" , "SSPscen", "BIOscen", "SDGscen", "X1995", "X2000", "X2005", "X2010", "X2015")] <- c(NULL)
+years_x <-data_years[4:16]
 
 bv00 <- prep_z(data00)
 bv70 <- prep_z(data70)
@@ -73,7 +82,7 @@ bv74 <- prep_z(data74)
 bv78 <- prep_z(data78)
 
 x = c(0,5,7,10,15,25,45)
-y = c("B00","B70","B74", "B78")
+y = c("Baseline","Low","Medium", "High")
 z = rbind(bv00,bv70,bv74,bv78)
 
 x_long <- 0:45
@@ -90,6 +99,18 @@ z_long <- rbind(
   bi_interpolate(bv74_long, bv78_long),
   bv78_long
 )
+
+### define chart designs
+
+labels <-c("Baseline", "Low", "Medium" ,"High")
+brewer_palette <- "PuOr"
+lcols <- brewer.pal(4, brewer_palette)
+
+lw = 1
+ts = 30
+ts_legend = ts * 0.6
+text_color = "gray25"
+
 
 #Statistical Review of World Energy 2023:
 # 2022 Primary Energy Consumption 604 EJ
@@ -114,144 +135,115 @@ m1 <- plot_ly(
   colorbar=list(
     title='EJ/yr'
   ),
-  #colorscale='oranges',
-  colors='YlGnBu',
+  colors='PuOr',
   showscale=TRUE,
   )
+m1
 m1 <- m1 %>% layout(
   scene = list(
     xaxis = list(title = 'USD/GJ', autorange="reversed"),
-    yaxis = list(title = 'target BII'),
+    yaxis = list(title = 'Biodiversity conservation ambition'),
     zaxis = list(title = 'EJ/yr'),
     camera = list(eye = list(x = 2, y = 0.1, z = 0.3)),
     aspectratio = list(x = 1, y = 1.2, z = 0.8)
     ))
 m1
-m1 <- m1 %>% layout (
-  yaxis = list(
-    ticktext = list("0", "0.70", "0.74", "0.78"),
-    tickvals = list("B00","B70","B74", "B78"),
-    tickmode = "array"
-  )
-)
-m1
-
 m1 <- m1 %>% colorbar(
   orientation = "h"
 )
 m1
 
-marker_surface <- function(level) {
-  plane <- matrix(level, nrow = length(y), ncol = length(x))
-  plane_surface <- plot_ly(x = ~x, y = ~y, z = ~plane, type = 'surface', showscale = FALSE, opacity = 0.5, color = "gray70")
-  return(plane_surface)
-}
+save_image(p = m1, file = "test.png") 
 
-pe_plane_surface <- marker_surface(pe_level)
-eg_plane_surface <- marker_surface(eg_level)
-c1_plane_surface <- marker_surface(c1_level)
-
-# Kombinieren der Plots
-combined_plot <- subplot(m1, pe_plane_surface, eg_plane_surface, c1_plane_surface) %>% layout(scene = list(zaxis = list(title = 'Z')))
-combined_plot <- combined_plot %>% layout(scene = list(
-    xaxis = list(title = 'USD/GJ', autorange="reversed"),
-    yaxis = list(title = 'target BII'),
-    zaxis = list(title = 'EJ/yr'),
-    camera = list(eye = list(x = 2, y = 0.1, z = 0.5)),
-    aspectratio = list(x = 1, y = 1.2, z = 0.8)
-  ))
-
-combined_plot
-
-a <- list( 
-  text = "annotation a",
-  xref = "x",
-  yref = "y",
-  showarrow = FALSE,
-  arrowhead = 7,
-  ax = 20,
-  ay = -40
-)
-
-combined_plot <- combined_plot %>% layout(annotations = a, xaxis = x, yaxis = y)
-combined_plot
-
-save_image(p = fig, file = "test.png") 
-
-######################
-
-ncpath <- "Disagg data/BII00/BE45/"
-ncpath2 <- "Disagg data/BII78/BE45/"
+### Subplot 3: Biomass production maps
+ncpathNo <- paste(sep = "/", data_folder,"Disagg data/BII00/BE45/")
+ncpathHigh <- paste(sep = "/", data_folder,"Disagg data/BII78/BE45/") 
 ncname <- "cell.land_split_0.5"  
 
+# Plot a single delta map
 plot_map <- function(file, t = "") {
   landmask <- nc_open(file)
   a <- ncvar_get(landmask,"crop_kbe_ir") + 
     ncvar_get(landmask,"crop_kbe_rf")
-  
   nc_close(landmask)
   c <- a[,,18]
   land_df <- melt(c)
   land_df$Y <- (361-land_df$X2)
   
-  #myPalette <- colorRampPalette(brewer.pal(9, "OrRd"))
-  #sc <- scale_colour_gradientn(na.value = "transparent", colours = myPalette(100))
-  
+  myPalette <- colorRampPalette(brewer.pal(11, "RdBu"))
+  sc <- scale_colour_gradientn(na.value = "transparent", colours = myPalette(100))
+
   ggplot(aes(x = X1, y = Y, fill = value), data = land_df) + 
     geom_raster() + 
-    coord_equal() +
+    coord_equal() + 
     scale_fill_gradient2(name = "Bioenergy cropland (Mha per grid-cell)", na.value = "gray60", low = "white", mid = "firebrick3", high = "firebrick", midpoint = 0.13, limits = c(0, 0.25)) +
-    #scale_fill_gradientn(name = expression("Mha per grid-cell"),
-    #                    na.value = "gray60", colours = myPalette(9)) +
     scale_x_continuous(expand=c(0,0)) + 
     scale_y_continuous(expand=c(0,0)) + 
-    theme(axis.line=element_blank(),axis.text.x=element_blank(),
-          axis.text.y=element_blank(),axis.ticks=element_blank(),
-          axis.title.x=element_blank(),
-          axis.title.y=element_blank(),
-          panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
-          panel.grid.minor=element_blank()) +
-    theme(text = element_text(size = ts, color="gray25"),
-          title = element_text(size = ts * 0.8),
-          legend.title.position = "top", 
-          legend.title = element_text(size=ts*0.8),
-          legend.margin=margin(c(2,10,2,10)),
-          legend.key.width = unit(.02, "npc"),
-          legend.key.height = unit(.02, "npc"),
-          #          legend.position = c(.5, 0.07),
-          #          legend.position = "none",
+    theme(axis.line=element_blank(),
+          axis.text=element_blank(),
+          axis.ticks=element_blank(),
+          axis.title=element_blank(),
+          panel.background=element_blank(),
+          panel.border=element_blank(),
+          panel.grid.major=element_blank(),
+          panel.grid.minor=element_blank(),
+          text = element_text(
+            size = ts, 
+            color="gray25"),
+          title = element_text(size = ts * 0.6),
+          legend.text = element_text(size = ts_legend),
+          legend.position = "bottom",
+          legend.title.position = "top",
+          legend.title = element_text(
+            size=ts_legend,
+            hjust = 0.5),
+          legend.margin=margin(5,30,5,30),
+          legend.key.width = unit(.08, "npc"),
+          legend.key.height = unit(.03, "npc"),
           legend.direction = 'horizontal',
           plot.title = element_text(hjust = 0.03)) +
     ggtitle(t) 
 }
-
-ncfname <- paste(ncpath, ncname, ".nc", sep="")
-ncfname2 <- paste(ncpath2, ncname, ".nc", sep="")
-
-mapNo <- plot_map(ncfname, "No biodiversity protection")
-mapHigh <- plot_map(ncfname2, "High biodiversity protection")
-
+ncfNo <- paste(ncpathNo, ncname, ".nc", sep="")
+ncfHigh <- paste(ncpathHigh, ncname, ".nc", sep="")
+mapNo <- plot_map(ncfNo, "Baseline conservation ambition")
+ncfNo
+ggsave(paste0(figure_folder, "figure2_3_1_legend-bottom.png"), mapNo, width = 2515, height = 1950, units = c("px"))
+mapHigh <- plot_map(ncfHigh, "High conservation ambition")
+ggsave(paste0(figure_folder, "figure2_3_2_legend-bottom.png"), mapHigh, width = 2515, height = 1950, units = c("px"))
 map_legend <- cowplot::get_legend(ggplotGrob(mapNo))
-mapNo <- mapNo + theme(legend.position = "none")
-mapHigh <- mapHigh + theme(legend.position = "none")
+mapNo_none <- mapNo + theme(legend.position = "none")
+mapHigh_none <- mapHigh + theme(legend.position = "none")
 
-c1 <- plot_grid(mapNo, mapHigh, ncol = 2)
+mar_s <- 0.2
+mar_t <- 1.8
+m3_1_none <- mapNo_none + theme(plot.margin = unit(c(mar_t,mar_s,0,0),"cm"))
+m3_2_none <- mapHigh_none + theme(plot.margin = unit(c(mar_t,0,0,mar_s),"cm"))
+w_bottom <- plot_grid(m3_1_none, m3_2_none, ncol = 2) +
+  theme(
+    plot.margin = unit(c(0.1,0.1,0.3,0.1), "cm"),
+    plot.background = element_rect(fill = "white", color = "white")
+    )
+w_bottom
+ggsave(paste0(figure_folder, "figure2_bottom.png"), w_bottom, width = 5500, height = 1500, units = c("px"))
 
-c1 <- c1 + 
-  annotation_custom(map_legend, xmax = 1, ymax = 0.5)
-c1
-ggsave(filename = "figure2_maps_new.png", width = 7,  height = 3.6, c1)
+
 
 
 
 ### 
 
 data_bii <- list(data00, data70, data78, data78)
+data00[c("Region" , "SSPscen", "BIOscen", "SDGscen", "X1995", "X2000", "X2005", "X2010", "X2015")] <- c(NULL)
+years_x <-data00[4:16]
+
+data_bii[1][8:26]
 bii_be <- c("BIO45", "BIO45", "BIO45", "BIO00")
 bii_be_scen <- c("A", "B", "C", "D")
 #bii_be_scen <- c("Tech", "Stop", "Sust", "Min")
 #scen_names <- c("Min", "Stop", "Sust", "Tech")
 scen_names <-  c("Technical potential", "Stop Loss", "Sustainable", "Mininmal")
+
 years_x <- bii[8:26]
 
 load_land_data <- function(land_v) {
@@ -285,7 +277,6 @@ land_pasture <- load_land_data("Pasture")
 land_forest <- load_land_data("Forest")
 land_other <- load_land_data("Other Land")
 
-ts = 8
 lcols <- c("#ed322e", "#bd3123", "#8c2c18", "#5d240e")
 sideplot2_line <- function(data, title) {
   b <- data
@@ -312,6 +303,7 @@ sideplot2_line <- function(data, title) {
 }
 
 sp1 <- sideplot2_line(land_crop, "Cropland")
+sp1
 #ggsave("figure2_side1.png", sp1)
 sp2 <- sideplot2_line(land_pasture, "Pasture")
 sp3 <- sideplot2_line(land_forest, "Forest")
@@ -340,9 +332,7 @@ sp3 <- sp3 + theme(axis.title = element_blank()) +
 sp4 <- sp4 + theme(axis.title = element_blank())  +
   theme(plot.margin = unit(c(-0.2, 0.1, 0.3, 0), "cm"), legend.position = "none") 
 
-#w2 <- plot_grid(sp1, sp2, sp3, sp4, ncol = 2, rel_widths = c(1, 0.9), rel_heights = c(0.9,1), label_x = c(0.2,0.12,0.2,0.12), label_y = c(0.9,0.9,1.03,1.03), labels = c("i","ii","iii","iv"), label_colour= label_color, label_size = sub_label_size)
 w2 <- plot_grid(sp1, sp2, sp3, sp4, ncol = 2, rel_widths = c(1, 0.9), rel_heights = c(0.9,1), label_x = c(0.09,0.06 ,0.09,0.06), label_y = c(0.95,0.95,1.02,1.02), labels = c("i","ii","iii","iv"), label_colour= label_color, label_size = sub_label_size)
 w2
 ggsave(filename = "figure2_land_new.png", width = 7,  height = 3.6, w2)
-#ggsave(filename = "figure1_new_tags.png", width = 7,  height = 3.6, w2)
 
